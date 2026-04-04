@@ -1,0 +1,91 @@
+/* ── Design token surface ────────────────────────────────────────────
+   All themeable properties use CSS custom properties prefixed with --cr-.
+   Each token is initial (overridden by theme or consumer).
+   Consumer override example:
+     [data-widget="cr-walkthrough"] { --cr-color-accent: #ff6600; }
+───────────────────────────────────────────────────────────────────── */
+
+[data-widget="cr-walkthrough"] {
+  /* Backgrounds */
+  --cr-color-bg: initial;
+  --cr-color-surface: initial;
+  --cr-color-surface-raised: initial;
+  --cr-color-border: initial;
+
+  /* Text */
+  --cr-color-text: initial;
+  --cr-color-text-muted: initial;
+  --cr-color-text-subtle: initial;
+
+  /* Step type accents (used for badges, icons, borders) */
+  --cr-color-text-step: initial;
+  --cr-color-source-step: initial;
+  --cr-color-diff-step: initial;
+  --cr-color-code-step: initial;
+  --cr-color-compare-step: initial;
+  --cr-color-link-step: initial;
+  --cr-color-annotation-step: initial;
+  --cr-color-checkpoint-step: initial;
+  --cr-color-reveal-step: initial;
+  --cr-color-shell-step: initial;
+  --cr-color-section-step: initial;
+  --cr-color-branch-step: initial;
+
+  /* Severity */
+  --cr-color-severity-info: initial;
+  --cr-color-severity-warn: initial;
+  --cr-color-severity-issue: initial;
+  --cr-color-severity-praise: initial;
+
+  /* Diff line colours */
+  --cr-color-diff-add-bg: initial;
+  --cr-color-diff-add-text: initial;
+  --cr-color-diff-del-bg: initial;
+  --cr-color-diff-del-text: initial;
+  --cr-color-diff-hl-bg: initial;
+
+  /* Typography */
+  --cr-font-sans: system-ui, -apple-system, sans-serif;
+  --cr-font-mono: 'DM Mono', 'Menlo', 'Cascadia Code', monospace;
+  --cr-font-size-root: 13px;
+  --cr-font-size-xs: 10px;
+  --cr-font-size-sm: 11.5px;
+  --cr-font-size-base: 13px;
+  --cr-font-size-lg: 14px;
+  --cr-font-size-xl: 16px;
+  --cr-font-size-2xl: 20px;
+  --cr-font-size-code: 11.5px;
+  --cr-font-weight-normal: 400;
+  --cr-font-weight-medium: 500;
+  --cr-font-weight-semibold: 600;
+  --cr-font-weight-bold: 700;
+  --cr-line-height-tight: 1.3;
+  --cr-line-height-base: 1.65;
+  --cr-line-height-relaxed: 1.75;
+
+  /* Spacing */
+  --cr-space-0: 0;
+  --cr-space-1: 4px;
+  --cr-space-2: 8px;
+  --cr-space-3: 12px;
+  --cr-space-4: 16px;
+  --cr-space-5: 20px;
+  --cr-space-6: 32px;
+  --cr-space-8: 48px;
+
+  /* Radii */
+  --cr-radius-sm: 4px;
+  --cr-radius-md: 6px;
+  --cr-radius-lg: 9px;
+  --cr-radius-xl: 12px;
+  --cr-radius-full: 9999px;
+
+  /* Shadows */
+  --cr-shadow-card: none;
+  --cr-shadow-raised: none;
+
+  /* Transitions */
+  --cr-transition-fast: 80ms ease;
+  --cr-transition-base: 150ms ease;
+  --cr-transition-slow: 300ms ease;
+}

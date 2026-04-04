@@ -1,0 +1,53 @@
+/* ── Dark theme (default) ─────────────────────────────────────────────
+   Applied via: <link rel="stylesheet" href="theme-dark.css">
+   Or embedded in the app's CSS pipeline.
+───────────────────────────────────────────────────────────────────── */
+
+[data-widget="cr-walkthrough"][data-theme="dark"],
+[data-widget="cr-walkthrough"]:not([data-theme]) {
+  /* Backgrounds */
+  --cr-color-bg: #101114;
+  --cr-color-surface: #141518;
+  --cr-color-surface-raised: #1a1b20;
+  --cr-color-border: #1e1f24;
+
+  /* Text */
+  --cr-color-text: #c8cad0;
+  --cr-color-text-muted: #6b7280;
+  --cr-color-text-subtle: #3a3c44;
+
+  /* Step type accents */
+  --cr-color-text-step: #7c8da6;
+  --cr-color-source-step: #5b9cf5;
+  --cr-color-diff-step: #dba14e;
+  --cr-color-code-step: #a87ee0;
+  --cr-color-compare-step: #3ebfa5;
+  --cr-color-link-step: #5b9cf5;
+  --cr-color-annotation-step: #e06070;
+  --cr-color-checkpoint-step: #dba14e;
+  --cr-color-reveal-step: #7c8da6;
+  --cr-color-shell-step: #3ebfa5;
+  --cr-color-section-step: #a87ee0;
+  --cr-color-branch-step: #dba14e;
+
+  /* Severity */
+  --cr-color-severity-info: #5b9cf5;
+  --cr-color-severity-warn: #dba14e;
+  --cr-color-severity-issue: #e06070;
+  --cr-color-severity-praise: #3ebfa5;
+
+  /* Diff line colours */
+  --cr-color-diff-add-bg: rgba(62, 191, 165, 0.06);
+  --cr-color-diff-add-text: #3ebfa5;
+  --cr-color-diff-del-bg: rgba(224, 96, 112, 0.06);
+  --cr-color-diff-del-text: #e06070;
+  --cr-color-diff-hl-bg: rgba(219, 161, 78, 0.08);
+
+  /* Typography */
+  --cr-font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --cr-font-mono: 'DM Mono', 'Menlo', 'Cascadia Code', monospace;
+
+  /* Shadows */
+  --cr-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --cr-shadow-raised: 0 4px 12px rgba(0, 0, 0, 0.5);
+}

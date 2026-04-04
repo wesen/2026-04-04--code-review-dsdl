@@ -1,0 +1,83 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Introduction" />
+
+# CR Walkthrough — Component Library
+
+The `@crs-cradle/cr-walkthrough` Storybook documents every component and step renderer in the CR Walkthrough System.
+
+## Package layout
+
+```
+@crs-cradle/cr-walkthrough
+├── src/
+│   ├── components/
+│   │   ├── CRWalkthrough.tsx    # Root component + ThemeProvider
+│   │   ├── FileBadge.tsx        # File path + line range header
+│   │   ├── CodeBlock.tsx        # Monospace code container
+│   │   ├── CodeLine.tsx         # Single line with optional highlight
+│   │   └── Note.tsx            # Italic margin note
+│   ├── renderers/
+│   │   ├── StepCard.tsx          # Step wrapper (badge + index)
+│   │   ├── StepRendererRegistry # Maps step.type → renderer
+│   │   ├── TextRenderer         # Prose paragraph
+│   │   ├── SourceRenderer        # File badge + code (RTK Query)
+│   │   ├── DiffRenderer         # Unified diff (RTK Query)
+│   │   ├── CodeRenderer         # Inline snippet
+│   │   ├── CompareRenderer      # Side-by-side (RTK Query ×2)
+│   │   ├── LinkRenderer         # External link
+│   │   ├── AnnotationRenderer    # Severity-coloured inline note
+│   │   ├── CheckpointRenderer   # Interactive quiz
+│   │   ├── RevealRenderer       # Collapsible toggle
+│   │   ├── ShellRenderer         # Command + output
+│   │   ├── SectionRenderer       # Grouped steps
+│   │   └── BranchRenderer       # Navigation branches
+│   ├── api/
+│   │   └── walkthroughsApi.ts   # RTK Query slice
+│   ├── mocks/
+│   │   └── handlers.ts          # MSW request handlers
+│   ├── fixtures/
+│   │   └── authRefactor.ts       # Auth refactor walkthrough fixture
+│   ├── types.ts                 # All domain types
+│   ├── parts.ts                 # data-part constant names
+│   ├── tokens.css              # CSS custom property surface
+│   ├── theme-dark.css           # Dark theme (default)
+│   └── theme-light.css          # Light theme
+```
+
+## Theming
+
+All visual regions are controlled by CSS custom properties on `[data-widget="cr-walkthrough"]`. Override any token:
+
+```tsx
+<CRWalkthrough
+  walkthrough={wt}
+  tokens={{
+    '--cr-color-source-step': '#ff6600',
+    '--cr-radius-lg': '0px',
+  }}
+/>
+```
+
+## data-part attributes
+
+Every visual region has a stable `data-part` attribute. Use these in CSS selectors instead of class names:
+
+```css
+[data-widget="cr-walkthrough"] [data-part="file-badge"] {
+  background: var(--cr-color-surface-raised);
+}
+```
+
+## Stories by section
+
+- **Primitives** — `FileBadge`, `CodeBlock`, `CodeLine`, `Note`
+- **StepCard** — all 13 step types in card form
+- **Interactive** — `Checkpoint`, `Reveal`, `Branch` (stateful)
+- **Annotation/Section** — all 4 severities + SourceRenderer
+- **CRWalkthrough** — root component stories (dark, light, unstyled, custom tokens)
+- **Introduction** — this page
+
+## Story backgrounds
+
+Stories are shown against both `#101114` (dark) and `#ffffff` (light) backgrounds. Use the Storybook ** backgrounds** panel to switch.

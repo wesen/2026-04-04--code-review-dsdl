@@ -1,0 +1,51 @@
+/* ── Light theme ──────────────────────────────────────────────────────
+   Applied via: <link rel="stylesheet" href="theme-light.css">
+───────────────────────────────────────────────────────────────────── */
+
+[data-widget="cr-walkthrough"][data-theme="light"] {
+  /* Backgrounds */
+  --cr-color-bg: #ffffff;
+  --cr-color-surface: #f9fafb;
+  --cr-color-surface-raised: #f3f4f6;
+  --cr-color-border: #e5e7eb;
+
+  /* Text */
+  --cr-color-text: #1f2937;
+  --cr-color-text-muted: #6b7280;
+  --cr-color-text-subtle: #9ca3af;
+
+  /* Step type accents */
+  --cr-color-text-step: #6b7280;
+  --cr-color-source-step: #2563eb;
+  --cr-color-diff-step: #d97706;
+  --cr-color-code-step: #7c3aed;
+  --cr-color-compare-step: #059669;
+  --cr-color-link-step: #2563eb;
+  --cr-color-annotation-step: #dc2626;
+  --cr-color-checkpoint-step: #d97706;
+  --cr-color-reveal-step: #6b7280;
+  --cr-color-shell-step: #059669;
+  --cr-color-section-step: #7c3aed;
+  --cr-color-branch-step: #d97706;
+
+  /* Severity */
+  --cr-color-severity-info: #2563eb;
+  --cr-color-severity-warn: #d97706;
+  --cr-color-severity-issue: #dc2626;
+  --cr-color-severity-praise: #059669;
+
+  /* Diff line colours */
+  --cr-color-diff-add-bg: rgba(5, 150, 105, 0.06);
+  --cr-color-diff-add-text: #059669;
+  --cr-color-diff-del-bg: rgba(220, 38, 38, 0.05);
+  --cr-color-diff-del-text: #dc2626;
+  --cr-color-diff-hl-bg: rgba(217, 119, 6, 0.06);
+
+  /* Typography */
+  --cr-font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --cr-font-mono: 'DM Mono', 'Menlo', 'Cascadia Code', monospace;
+
+  /* Shadows */
+  --cr-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --cr-shadow-raised: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
