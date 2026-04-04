@@ -23,14 +23,14 @@
 
 ## Phase 3: React frontend — Component scaffold + theming foundation
 
-- [ ] 3.1  Initialize Vite + React 18 + TypeScript project under `frontend/`
-- [ ] 3.2  Set up `packages/cr-walkthrough/` as local workspace package (`workspace:` in package.json)
-- [ ] 3.3  Define `parts.ts` — full `data-part` name constants (PARTS.*)
-- [ ] 3.4  Write `tokens.css` — all CSS custom properties (colors, typography, spacing, radius, shadow, layout)
-- [ ] 3.5  Write `theme-dark.css` and `theme-light.css` — default token values for each theme
-- [ ] 3.6  Write `CRWalkthrough.tsx` root component with `ThemeProvider` context + `data-widget` / `data-theme` attributes
-- [ ] 3.7  Set up `frontend/storybook/` with `@storybook/react-vite`, preview with both themes
-- [ ] 3.8  Write Storybook Introduction page + `CRWalkthrough.stories.tsx` (default, dark, light, custom tokens)
+- [x] 3.1  Initialize Vite + React 18 + TypeScript project under `frontend/`
+- [x] 3.2  Set up `packages/cr-walkthrough/` as local workspace package (`workspace:` in package.json)
+- [x] 3.3  Define `parts.ts` — full `data-part` name constants (PARTS.*)
+- [x] 3.4  Write `tokens.css` — all CSS custom properties (colors, typography, spacing, radius, shadow, layout)
+- [x] 3.5  Write `theme-dark.css` and `theme-light.css` — default token values for each theme
+- [x] 3.6  Write `CRWalkthrough.tsx` root component with `ThemeProvider` context + `data-widget` / `data-theme` attributes
+- [x] 3.7  Set up `frontend/storybook/` with `@storybook/react-vite`, preview with both themes
+- [x] 3.8  Write Storybook Introduction page + stories (95 stories across 18 story files)
 
 ## Phase 4: React frontend — RTK Query API layer + MSW mocks
 

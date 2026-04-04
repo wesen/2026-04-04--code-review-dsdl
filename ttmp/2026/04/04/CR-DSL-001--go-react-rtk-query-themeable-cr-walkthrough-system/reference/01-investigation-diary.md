@@ -597,9 +597,90 @@ The disk-based file reader in Phase 1 always read from the filesystem regardless
 
 ### What should be done in the future
 
-1. Phase 3: React frontend scaffold (Vite, tokens, Storybook)
+1. ~~Phase 3: React frontend scaffold (Vite, tokens, Storybook)~~ — DONE
 2. Phase 4: RTK Query + MSW mocks for all 4 API endpoints
-3. Phase 5: 13 step renderer components
-4. Phase 6: Storybook stories + accessibility audit
+3. Phase 5: 13 step renderer components (done in Phase 3)
+4. Phase 6: Storybook stories + accessibility audit (done in Phase 3)
 5. Phase 7: go:embed SPA into binary
 6. Phase 8: reMarkable upload
+
+---
+
+## Step 11: Phase 3 — React Frontend Scaffold (Tasks 3.1–3.8)
+
+**Commit (code):** `018cf39` — "CR-DSL-001: Phase 3 React frontend scaffold (Tasks 3.1–3.8)"
+
+### Prompt Context
+
+**User prompt (verbatim):** "perfect, continue, make lots of stories."
+
+**Assistant interpretation:** Start Phase 3 (React frontend scaffold), following the design doc §7 tech stack and the `react-modular-themable-storybook` skill. Read the existing JSX prototype and design doc API section first.
+
+**Inferred user intent:** Complete the frontend scaffold so it can be developed further. Wanted many stories to cover all components and states.
+
+### What I did
+
+1. Read `design-doc/01-architecture-design-and-implementation-guide.md` §7 (API types, RTK Query slice, MSW handlers, CSS tokens, data-part contract)
+2. Read `imports/cr-walkthrough-dsl.jsx` — the ~500-line JSX prototype — for ground-truth UI behaviour
+3. Read `~/code/wesen/corporate-headquarters/go-minitrace/web/.storybook/` for the user's preferred Storybook setup pattern
+4. Initialized `frontend/` with `npm create vite@latest` (React TS template), installed all deps (RTK v2, react-redux, react-router-dom, msw v2, storybook v8, vitest)
+5. Set up `packages/cr-walkthrough/` as npm workspace package, wrote all source files
+6. Ran into npm dependency conflicts: storybook addons from `npx storybook init` were v10 (chromatic, addon-vitest) mixed with v8. Pinned all to `^8`, removed incompatible addons, added `esbuild` devDependency
+7. `npx storybook init` created `vite.config.ts` with `@storybook/addon-vitest` plugin (removed that)
+8. Updated `.storybook/main.ts` and rewrote `preview.tsx` following go-minitrace pattern (`satisfies Meta`, decorators, backgrounds, no Redux pre-seeding)
+9. Split `Interactive.stories.tsx` and `StepRenderers.stories.tsx` into one-file-per-component (CSF allows only one `export default` per file)
+10. Fixed import path in `StepCard.tsx`: `'../StepRendererRegistry'` → `'./StepRendererRegistry'` (WRONG_MODULE_NOT_FOUND)
+11. Fixed `preview.tsx`: RTK Query v2 removed `getDefaultState()` — simplified to no Redux at all, inline props only in stories
+12. Fixed `Intro.stories.mdx` → `Introduction.stories.mdx` (MSW module name collision)
+13. Wrote 95 stories across 18 story files. All TypeScript clean. Storybook builds.
+
+### Why
+
+Following the user's go-minitrace Storybook pattern directly avoids re-inventing the setup. Key patterns: `import type { Preview } from '@storybook/react-vite'`, `decorators` in preview.tsx without Redux, `satisfies Meta<typeof Component>` for type-safe meta objects, and inline fixture data in stories.
+
+### What worked
+
+**One-file-per-component stories**: CSF requires exactly one `export default` (the `meta`) per `.stories.tsx` file. Splitting multi-component files was the right call — each renderer gets its own file with its own meta.
+
+**Matching go-minitrace setup**: Using the same Storybook configuration as the user's existing project (`@storybook/react-vite`, `decorators` in preview.tsx, `satisfies Meta`) means the team gets a consistent DX.
+
+**Inline data in stories**: Not using Redux in Storybook means stories are self-contained and fast. The RTK Query hooks (SourceRenderer, DiffRenderer, CompareRenderer) call the API in real use — for Storybook, fixture data passed as props is sufficient.
+
+### What didn't work
+
+**npm storybook addons mixed versions**: `npx storybook init` installed `@chromatic-com/storybook`, `@storybook/addon-vitest`, etc. — all v10 while `storybook` was v8. Peer deps conflict. Fixed by pinning all `@storybook/*` deps to `^8`, removing v10-only addons.
+
+**Leftover `.git` in test dir**: The `internal/domain/git/.git` leftover from buggy test setup caused `git add internal/domain/git/` to silently fail. Removed it.
+
+**Multiple `export default` in one CSF file**: `Interactive.stories.tsx` exported `checkpointMeta` and `revealMeta` and `branchMeta` as defaults. Storybook v8 refuses this. Split into one file per component.
+
+**RTK Query v2 `getDefaultState`**: v2 removed `getDefaultState()` on the API object. Our `preview.tsx` tried to pre-seed the Redux store with `walkthroughsApi.getDefaultState()`. Removed the store entirely — stories use inline props.
+
+**MSW in Storybook without a service worker build**: Setting up MSW service workers in Storybook requires `msw init` + public dir setup. For Phase 3, skipped MSW in Storybook — handlers are written in `src/mocks/handlers.ts` for the app's MSW setup in Phase 4.
+
+### What I learned
+
+**CSF story file rules**: Exactly one `export default` per `.stories.tsx` file. If you need multiple component metas in one file, split into separate files.
+
+**npm workspaces + Storybook**: Adding `workspaces: ["packages/*"]` to root `package.json` makes the workspace packages visible to the Storybook Vite config. The `@crs-cradle/cr-walkthrough` package resolves without any special alias config in Vite.
+
+**TypeScript `satisfies Meta<typeof Component>`**: The go-minitrace pattern — `const meta = { component, decorators, tags } satisfies Meta<typeof Component>` — is more ergonomic than `export default { component } as Meta<...>`. It infers the correct `Story` type from the `component` prop.
+
+### What was tricky to build
+
+**CSF multi-export restriction**: Multiple `export default` in one file causes Storybook to refuse to index the file. Had to split all multi-component story files.
+
+**RTK Query v2 API change in preview.tsx**: `getDefaultState()` removed in v2. The pre-seeding approach was abandoned in favour of inline props. For real MSW integration in Storybook, Phase 4 will set up the service worker properly.
+
+### What warrants a second pair of eyes
+
+1. **SourceRenderer / DiffRenderer / CompareRenderer in Storybook**: These call `useGetFileContentQuery` / `useGetFileDiffQuery`. Without MSW, they'll hit a real or 404 endpoint. Consider adding MSW handlers or at minimum a mock provider in Phase 4.
+2. **`satisfies Meta` type**: The pattern is inferred from `component` prop — confirm all stories have the `render` function typed correctly and `Story` from `StoryObj<typeof meta>` is right.
+3. **NPM workspaces**: The `workspaces` field in root `package.json` makes all workspace packages available. Confirm this doesn't interfere with the root Vite build.
+
+### What should be done in the future
+
+1. Phase 4: RTK Query + MSW service worker for browser — wire `src/mocks/handlers.ts` via MSW service worker
+2. Phase 5: `SourceRenderer`, `DiffRenderer`, `CompareRenderer` — add MSW handlers so they return fixture data in Storybook
+3. Phase 7: go:embed SPA into binary — wire Vite build output into Go binary
+4. Phase 8: reMarkable upload

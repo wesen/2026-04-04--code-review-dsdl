@@ -2,6 +2,32 @@
 
 ## 2026-04-04
 
+### Phase 3: React frontend scaffold (Tasks 3.1–3.8)
+
+Full frontend scaffold: 95 stories across 18 story files. TypeScript clean. Storybook builds.
+
+- `packages/cr-walkthrough/`: local workspace package (`workspace:` in root package.json)
+  - `types.ts`: all 12 step types + discriminated union + Walkthrough/FileContent/DiffContent
+  - `parts.ts`: 50+ `data-part` constant names (PARTS.*) for stable theming selectors
+  - `tokens.css`: CSS custom property surface — --cr-color-*, --cr-space-*, --cr-font-*, --cr-radius-*
+  - `theme-dark.css` / `theme-light.css`: default token values
+  - `api/walkthroughsApi.ts`: RTK Query slice (4 endpoints)
+  - `components/`: FileBadge, CodeBlock, CodeLine, Note, CRWalkthrough + ThemeProvider
+  - `renderers/`: 13 step renderers (Text, Source, Diff, Code, Compare, Link, Annotation, Checkpoint, Reveal, Shell, Section, Branch, StepCard, StepRendererRegistry)
+  - `fixtures/authRefactor.ts`: complete walkthrough fixture
+  - `stories/`: 18 story files — 95 stories total
+
+Key design decisions:
+- `data-part` attributes on every visual region for stable theming selectors
+- `satisfies Meta<typeof Component>` pattern in stories
+- `@crs-cradle/cr-walkthrough` workspace package with workspace:// alias
+- RTK Query v2 API (no getDefaultState — use upsertQueryData)
+- npm workspaces for the package
+
+---
+
+## 2026-04-04
+
 ### Phase 2: Git integration (Tasks 2.1–2.6)
 
 Git service layer backed by `go-git/go-git/v5`:
