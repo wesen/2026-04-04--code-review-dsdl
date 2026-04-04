@@ -5,6 +5,20 @@ topics:
       description: Backend services
     - slug: websocket
       description: WebSocket lifecycle & events
+    - slug: code-review
+      description: Topic for code-review
+    - slug: design-doc
+      description: Topic for design-doc
+    - slug: go-backend
+      description: Topic for go-backend
+    - slug: react-frontend
+      description: Topic for react-frontend
+    - slug: rtk-query
+      description: Topic for rtk-query
+    - slug: storybook
+      description: Topic for storybook
+    - slug: themable-css
+      description: Topic for themable-css
 docTypes:
     - slug: design-doc
       description: Structured rationale and architecture notes
