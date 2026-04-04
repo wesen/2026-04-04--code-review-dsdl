@@ -522,7 +522,84 @@ Diary written, bookkeeping updated. The ticket now has:
 
 ### What should be done in the future
 
-1. Phase 2: git integration with go-git — replace the `TODO` in `files.go`
-2. Implement `GET /api/files/diff` endpoint
-3. Implement `GET /api/repos/:repo/refs` (list branches/tags)
+1. ~~Phase 2: git integration with go-git — replace the `TODO` in `files.go`~~ — DONE
+2. ~~Implement `GET /api/files/diff` endpoint~~ — DONE
+3. ~~Implement `GET /api/repos/:repo/refs` (list branches/tags)~~ — DONE
 4. Start the React frontend scaffold (Phase 3)
+
+---
+
+## Step 10: Phase 2 — Git integration (Tasks 2.1–2.6)
+
+Phase 2 wired a full `go-git` service layer into the API so that `GET /api/files/content` reads from a git ref (branch/commit) rather than the working tree, and added `GET /api/files/diff` and `GET /api/repos/refs` endpoints. The core insight was that the `RepoService` interface in `internal/domain/git/` owns all git operations; the `api` package is a consumer.
+
+**Commit (code):** `d727b6b` — "CR-DSL-001: Phase 2 git integration (Tasks 2.1–2.6)"
+
+### What I did
+
+1. Added `go get github.com/go-git/go-git/v5` → `v5.17.2`, along with `plumbing/object` and `storage/memory`
+2. Initialized `sample-repo/` as a real git repo (`git init`, two commits, `feat/auth-refactor` branch, `v1.0.0` tag)
+3. Wrote `internal/domain/git/service.go` — `RepoService` interface + `GitRepoService` implementation
+4. Wrote `internal/domain/git/cache.go` — `RepoServiceWithCache` (TTL in-memory, background eviction)
+5. Wrote `internal/domain/git/service_test.go` — integration tests using temp-dir git repos (`os.MkdirTemp` + `git -C tmp ...`)
+6. Updated `internal/api/files.go` — wired `git.RepoService`, rewrote `handleFileContent`, added `handleFileDiff`, `handleListRefs`
+7. Updated `internal/api/server.go` — `Config.RepoService` (nil = default cached service), new `handleReposRoutes`
+8. Updated `internal/api/api_test.go` — `TestHandleFileContent` uses real git-backed service via sample-repo
+9. Added `.gitignore` entry for `sample-repo/README.md`
+
+### Why
+
+The disk-based file reader in Phase 1 always read from the filesystem regardless of which git branch the walkthrough described. Walkthroughs reference `base`/`head` refs, so the API needs to read file content at those specific commits. The interface-based design (`RepoService`) lets us cache, mock, or swap implementations without changing the API layer.
+
+### What worked
+
+**Interface + decorator pattern**: `RepoService` interface means `CachedRepoService` wraps `GitRepoService` without either knowing about the other. The API handler just calls `repoSvc.ReadFileLines(ctx, ...)` — no knowledge of caching.
+
+**`git -C tmp` for all git commands**: Every `exec.Command("git", "-C", tmp, ...)` call isolates git to the temp directory regardless of cwd. This avoids accidental side effects on the project repo.
+
+**Go-git `ResolveRevision` for ref resolution**: Handles branches, tags, commit SHAs, and relative refs (`HEAD~n`) in one call.
+
+**Explicit two-tree diff form**: `git diff A B` (not `A..B`) avoids ambiguity when git parses the right-hand side as a path instead of a ref.
+
+### What didn't work
+
+**`os.Chdir(tmp)` approach for test setup**: `git init` creates `.git` in the current directory, not the target directory. Changing cwd with `os.Chdir` also affected all subsequent tests in the same process. Replaced with `git -C tmp` on every command.
+
+**`git diff A..B` with `cmd.Dir=tmp`**: When git runs in `tmp` dir (via `cmd.Dir`), it interprets `B` as a path in the working tree, not a ref. Result: `git diff main..feat/test` returns empty instead of the diff. Fix: `git diff main feat/test` (two-tree form).
+
+**`strings.Contains(err.Error(), "exit status 1")` for git diff exit codes**: `"exit status 128"` (unknown ref) contains `"exit status 1"` as a substring. Replaced with `errors.As` to check the actual exit code.
+
+**`splitLines` handling consecutive newlines**: `strings.Split("a\n\nb", "\n")` gives `["a", "", "b"]`. A trailing newline left a spurious empty element. Fix: normalize all line endings to `\n`, split, then filter out empty strings.
+
+**Leftover `.git` directory**: An earlier test version used `os.Chdir(tmp)` which changed the global cwd. When tests ran, the git repo was accidentally created at `internal/domain/git/.git` instead of the temp dir. Removed it; tests run clean now.
+
+### What I learned
+
+**Git diff range syntax ambiguity**: `git diff A..B` with `cmd.Dir` causes git to parse `B` as a working-tree path. The explicit two-tree form `git diff A B` always works.
+
+**`git init` in Go tests**: Always use `git -C tmp` (not `os.Chdir`) to target the right directory. `os.Chdir` changes process-global state.
+
+**Exit code classification**: `exec.ExitError.ExitCode()` is the right way to check git exit codes — not string matching on `err.Error()`.
+
+**go-git in-memory storage**: `memory.NewStorage()` creates an in-memory repo, but `PlainOpen` needs a real filesystem. For integration tests, temp dir + subprocess git is the most reliable approach.
+
+### What was tricky to build
+
+**`git -C tmp` vs `cmd.Dir`**: Both specify the working directory for git, but only `-C tmp` works for `git diff A..B`. When debugging why diffs returned empty, had to isolate that `cmd.Dir` causes git to interpret the second ref as a path.
+
+**Test fixture isolation**: Each test needs a fresh git repo (different temp dir, no shared state). `os.MkdirTemp` + cleanup handles this. Git repo must have at least 2 commits on different branches for diff tests to be meaningful.
+
+### What warrants a second pair of eyes
+
+1. **`GetDiff` subprocess**: Phase 3 design doc says to replace `exec git diff` with pure go-git tree comparison. The TODO comment is in the code. Ensure the replacement produces the same unified diff format.
+2. **Cache invalidation on push**: The TTL cache never invalidates on `git push`. If the server is long-running and someone pushes new commits, cached file reads may be stale until TTL expires (5 min).
+3. **Sample repo fixture**: `sample-repo/.git` is real git history used by tests. If it's accidentally rewritten (force push, reset), integration tests may break.
+
+### What should be done in the future
+
+1. Phase 3: React frontend scaffold (Vite, tokens, Storybook)
+2. Phase 4: RTK Query + MSW mocks for all 4 API endpoints
+3. Phase 5: 13 step renderer components
+4. Phase 6: Storybook stories + accessibility audit
+5. Phase 7: go:embed SPA into binary
+6. Phase 8: reMarkable upload
