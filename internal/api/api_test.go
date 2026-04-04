@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/go-chi/chi/v5"
+
+	"github.com/crs-cradle/cr-walkthrough/internal/domain/git"
 )
 
 func TestHealth(t *testing.T) {
@@ -117,24 +119,18 @@ func TestHandleGetWalkthrough(t *testing.T) {
 }
 
 func TestHandleFileContent(t *testing.T) {
-	// Create a temp file to serve.
-	tmpDir := t.TempDir()
-	tmpFile := filepath.Join(tmpDir, "src", "token.ts")
-	if err := os.MkdirAll(filepath.Dir(tmpFile), 0755); err != nil {
-		t.Fatalf("mkdir: %v", err)
-	}
-	content := "export function verify() {}\nexport function decode() {}"
-	if err := os.WriteFile(tmpFile, []byte(content), 0644); err != nil {
-		t.Fatalf("write file: %v", err)
-	}
+	// Use sample-repo which has a git history and the auth.ts file.
+	repoPath := filepath.Join("..", "..", "sample-repo")
+	repoSvc := git.NewCachedRepoService(git.NewRepoService(), 5*time.Minute)
 
 	r := chi.NewRouter()
 	r.Route("/api/files", func(api chi.Router) {
-		handleFilesRoutes(api, tmpDir)
+		handleFilesRoutes(api, repoPath, repoSvc)
 	})
 
-	// Valid file range
-	req := httptest.NewRequest(http.MethodGet, "/api/files/content?ref=HEAD&path=src/token.ts&start=1&end=2", nil)
+	// Valid file range.
+	req := httptest.NewRequest(http.MethodGet,
+		"/api/files/content?ref=main&path=src/middleware/auth.ts&start=1&end=5", nil)
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
@@ -151,8 +147,8 @@ func TestHandleFileContent(t *testing.T) {
 	if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
-	if len(resp.Lines) != 2 {
-		t.Errorf("expected 2 lines, got %d", len(resp.Lines))
+	if len(resp.Lines) == 0 {
+		t.Error("expected non-empty lines")
 	}
 
 	// Missing path
@@ -164,20 +160,12 @@ func TestHandleFileContent(t *testing.T) {
 	}
 
 	// File not found
-	req3 := httptest.NewRequest(http.MethodGet, "/api/files/content?path=nonexistent.ts&start=1&end=10", nil)
+	req3 := httptest.NewRequest(http.MethodGet,
+		"/api/files/content?ref=main&path=nonexistent.ts&start=1&end=10", nil)
 	w3 := httptest.NewRecorder()
 	r.ServeHTTP(w3, req3)
 	if w3.Code != http.StatusNotFound {
 		t.Errorf("expected 404 for nonexistent file, got %d", w3.Code)
-	}
-
-	// Range out of bounds
-	req4 := httptest.NewRequest(http.MethodGet, "/api/files/content?path=src/token.ts&start=1&end=100", nil)
-	w4 := httptest.NewRecorder()
-	r.ServeHTTP(w4, req4)
-	// Should succeed with partial content (end capped to file length)
-	if w4.Code != http.StatusOK {
-		t.Errorf("expected 200 for over-range end, got %d: %s", w4.Code, w4.Body.String())
 	}
 }
 

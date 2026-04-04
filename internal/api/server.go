@@ -14,12 +14,15 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+
+	"github.com/crs-cradle/cr-walkthrough/internal/domain/git"
 )
 
 // Config holds the server configuration.
 type Config struct {
-	WalkthroughsDir string // directory containing .yaml walkthrough files
-	RepoPath       string // root path of the git repository to serve files from
+	WalkthroughsDir string             // directory containing .yaml walkthrough files
+	RepoPath        string             // root path of the git repository to serve files from
+	RepoService    git.RepoService     // git service (nil = use default NewRepoService)
 	Port           int
 }
 
@@ -31,6 +34,12 @@ type Server struct {
 // NewServer creates and configures the Chi router.
 func NewServer(cfg Config) *Server {
 	r := chi.NewRouter()
+
+	// Resolve or default the repo service.
+	repoSvc := cfg.RepoService
+	if repoSvc == nil {
+		repoSvc = git.NewCachedRepoService(git.NewRepoService(), 5*time.Minute)
+	}
 
 	// Global middleware
 	r.Use(middleware.Logger)
@@ -48,7 +57,10 @@ func NewServer(cfg Config) *Server {
 		handleWalkthroughsRoutes(r, cfg.WalkthroughsDir)
 	})
 	r.Route("/api/files", func(r chi.Router) {
-		handleFilesRoutes(r, cfg.RepoPath)
+		handleFilesRoutes(r, cfg.RepoPath, repoSvc)
+	})
+	r.Route("/api/repos", func(r chi.Router) {
+		handleReposRoutes(r, cfg.RepoPath, repoSvc)
 	})
 
 	return &Server{

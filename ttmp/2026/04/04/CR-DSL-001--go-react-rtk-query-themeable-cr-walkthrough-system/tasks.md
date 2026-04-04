@@ -14,12 +14,12 @@
 
 ## Phase 2: Go backend — Git integration (go-git, diff, refs)
 
-- [ ] 2.1  Integrate `go-git/go-git/v5`, implement `internal/domain/git/repo.go` (Open, ResolveRef, ReadFileLines)
-- [ ] 2.2  Wire git service into `GET /api/files/content` (replace raw disk read with git read at ref)
-- [ ] 2.3  Implement `GET /api/files/diff` using `git diff` subprocess (placeholder for Phase 3 pure-Go replacement)
-- [ ] 2.4  Implement `GET /api/repos/:repo/refs` (list branches/tags)
-- [ ] 2.5  Error handling: 404 for missing file/ref, 416 for out-of-bounds line range, 400 for missing params
-- [ ] 2.6  Add in-memory LRU cache for file reads with 5-minute TTL
+- [x] 2.1  Integrate `go-git/go-git/v5`, implement `internal/domain/git/repo.go` (Open, ResolveRef, ReadFileLines)
+- [x] 2.2  Wire git service into `GET /api/files/content` (replace raw disk read with git read at ref)
+- [x] 2.3  Implement `GET /api/files/diff` using `git diff` subprocess (placeholder for Phase 3 pure-Go replacement)
+- [x] 2.4  Implement `GET /api/repos/:repo/refs` (list branches/tags)
+- [x] 2.5  Error handling: 404 for missing file/ref, 416 for out-of-bounds line range, 400 for missing params
+- [x] 2.6  Add in-memory LRU cache for file reads with 5-minute TTL
 
 ## Phase 3: React frontend — Component scaffold + theming foundation
 

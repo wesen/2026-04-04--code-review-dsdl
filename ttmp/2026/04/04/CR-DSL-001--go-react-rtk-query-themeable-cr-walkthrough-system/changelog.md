@@ -2,6 +2,27 @@
 
 ## 2026-04-04
 
+### Phase 2: Git integration (Tasks 2.1–2.6)
+
+Git service layer backed by `go-git/go-git/v5`:
+- `internal/domain/git/service.go`: `RepoService` interface, `GitRepoService` implementation — `ResolveRef`, `ReadFileLines`, `GetDiff` (git subprocess), `ListRefs`
+- `internal/domain/git/cache.go`: `RepoServiceWithCache` — in-memory TTL cache (5-min), background eviction goroutine, decorator pattern
+- `internal/api/files.go`: wired `git.RepoService` into `GET /api/files/content`, added `GET /api/files/diff` (`from`/`to` params), `GET /api/repos/refs` (branches + tags)
+- `internal/api/server.go`: `Config.RepoService` (optional, nil → default cached service), `handleReposRoutes`
+- `internal/api/api_test.go`: updated `TestHandleFileContent` to use real git-backed service
+
+All git tests (11): `ResolveRef`, `ReadFileLines`, `GetDiff`, `ListRefs`, `SplitLines`, and error cases — pass. API tests (5) pass. Full suite: 29 passing.
+
+Key bugs fixed during implementation:
+- `splitLines`: consecutive newlines and trailing newlines produced spurious empty strings → fixed with post-filtering
+- `git diff A..B` with `cmd.Dir=tmp`: git parses right side as path → switched to `git diff A B` (explicit two-tree form)
+- `git diff` exit code 128 (not 1) for missing refs → `errors.As` instead of string containment for error classification
+- `git init` in Go test: `git -C tmp init --quiet` with `-C` flag works reliably
+
+---
+
+## 2026-04-04
+
 ### API server and handler tests (Tasks 1.4–1.9)
 
 Full Go backend HTTP server scaffold:

@@ -3,3 +3,7 @@ bin/
 .ttmp.yaml
 frontend/node_modules/
 frontend/dist/
+
+# Git fixture artifacts (created by tests and integration runs)
+sample-repo/README.md
+

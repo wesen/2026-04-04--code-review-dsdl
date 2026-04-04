@@ -2,28 +2,28 @@ package api
 
 import (
 	"net/http"
-	"os"
-	"path/filepath"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+
+	"github.com/crs-cradle/cr-walkthrough/internal/domain/git"
 )
 
 // handleFilesRoutes mounts the /api/files routes.
-func handleFilesRoutes(r chi.Router, repoPath string) {
-	r.Get("/content", handleFileContent(repoPath))
+func handleFilesRoutes(r chi.Router, repoPath string, repoSvc git.RepoService) {
+	r.Get("/content", handleFileContent(repoPath, repoSvc))
+	r.Get("/diff", handleFileDiff(repoPath, repoSvc))
 }
 
-// handleFileContent handles GET /api/files/content?ref=&path=&start=&end=.
-// For Phase 1, this reads directly from the local repo path (no git integration yet).
-// The ref parameter is accepted but ignored until Phase 2 git integration.
-func handleFileContent(repoPath string) http.HandlerFunc {
+// handleFileContent handles GET /api/files/content.
+// Query params: ref, path, start, end.
+// The ref parameter selects which git ref (branch/commit) to read from.
+func handleFileContent(repoPath string, repoSvc git.RepoService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query()
 
-		// Required params
-		ref := query.Get("ref")   // git ref — accepted, used in Phase 2
-		path := query.Get("path") // repo-relative path, e.g. "src/utils/token.ts"
+		path := query.Get("path")
+		ref := query.Get("ref")
 		startStr := query.Get("start")
 		endStr := query.Get("end")
 
@@ -60,65 +60,115 @@ func handleFileContent(repoPath string) http.HandlerFunc {
 			return
 		}
 
-		// Read the file.
-		// TODO: In Phase 2, replace this with git-based reading using go-git so that
-		// we can respect the ref parameter (read file at specific branch/commit).
-		absPath := filepath.Join(repoPath, path)
-		data, err := os.ReadFile(absPath)
+		ctx := r.Context()
+		lines, err := repoSvc.ReadFileLines(ctx, repoPath, ref, path, start, end)
 		if err != nil {
-			if os.IsNotExist(err) {
-				writeError(w, http.StatusNotFound, "file not found: %s", path)
+			if isNotFound(err) {
+				writeError(w, http.StatusNotFound, "file not found: %s at %s", path, ref)
+			} else if isRefNotFound(err) {
+				writeError(w, http.StatusNotFound, "ref not found: %s", ref)
 			} else {
 				writeError(w, http.StatusInternalServerError, "read file: %v", err)
 			}
 			return
 		}
 
-		// Split into lines.
-		lines := splitLines(string(data))
-		if start > len(lines) {
+		// Clamp end to available lines if start is valid but end exceeds file.
+		actualEnd := start
+		if len(lines) > 0 {
+			actualEnd = start + len(lines) - 1
+		} else if start > 0 && start > end {
 			writeError(w, http.StatusRequestedRangeNotSatisfiable,
-				"start line %d exceeds file length %d", start, len(lines))
+				"start line %d exceeds available lines", start)
 			return
 		}
-		if end > len(lines) {
-			end = len(lines)
-		}
-
-		// Convert to 0-indexed, slice.
-		slice := lines[start-1 : end]
-		result := make([]string, len(slice))
-		copy(result, slice)
-
-		_ = ref // accepted but unused in Phase 1
 
 		writeJSON(w, http.StatusOK, map[string]interface{}{
 			"ref":   ref,
 			"path":  path,
-			"start": start,
-			"end":   end,
-			"lines": result,
+			"start": actualEnd - len(lines) + 1,
+			"end":   actualEnd,
+			"lines": lines,
 		})
 	}
 }
 
-// splitLines splits a string into lines, removing trailing \n and \r.
-func splitLines(s string) []string {
-	var lines []string
-	for i := 0; i < len(s); {
-		eol := i
-		for eol < len(s) && s[eol] != '\n' && s[eol] != '\r' {
-			eol++
+// handleFileDiff handles GET /api/files/diff.
+// Query params: from, to, path (optional).
+func handleFileDiff(repoPath string, repoSvc git.RepoService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		query := r.URL.Query()
+		fromRef := query.Get("from")
+		toRef := query.Get("to")
+		path := query.Get("path")
+
+		if fromRef == "" && toRef == "" {
+			writeError(w, http.StatusBadRequest, "at least one of from or to is required")
+			return
 		}
-		line := s[i:eol]
-		if eol < len(s) && s[eol] == '\r' && eol+1 < len(s) && s[eol+1] == '\n' {
-			line = line[:len(line)-1] // remove trailing \r
+
+		ctx := r.Context()
+		diff, err := repoSvc.GetDiff(ctx, repoPath, fromRef, toRef, path)
+		if err != nil {
+			if isRefNotFound(err) {
+				ref := fromRef
+				if ref == "" {
+					ref = toRef
+				}
+				writeError(w, http.StatusNotFound, "ref not found: %s", ref)
+			} else {
+				writeError(w, http.StatusInternalServerError, "git diff: %v", err)
+			}
+			return
 		}
-		lines = append(lines, line)
-		i = eol + 1
-		if eol < len(s) && s[eol] == '\r' {
-			i++ // skip lone \r
+
+		writeJSON(w, http.StatusOK, map[string]interface{}{
+			"from": fromRef,
+			"to":   toRef,
+			"path": path,
+			"diff": diff,
+		})
+	}
+}
+
+// handleReposRoutes mounts the /api/repos routes.
+func handleReposRoutes(r chi.Router, repoPath string, repoSvc git.RepoService) {
+	r.Get("/refs", handleListRefs(repoPath, repoSvc))
+}
+
+// handleListRefs handles GET /api/repos/refs.
+// Returns all local branches and tags for the configured repo.
+func handleListRefs(repoPath string, repoSvc git.RepoService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		refs, err := repoSvc.ListRefs(r.Context(), repoPath)
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, "list refs: %v", err)
+			return
+		}
+		writeJSON(w, http.StatusOK, map[string]interface{}{"refs": refs})
+	}
+}
+
+// isNotFound reports whether err indicates a file not found error.
+func isNotFound(err error) bool {
+	return err != nil && (
+		err.Error() == git.ErrFileNotFound.Error() ||
+		contains(err.Error(), "file not found at ref"))
+}
+
+// isRefNotFound reports whether err indicates a ref not found error.
+func isRefNotFound(err error) bool {
+	return err != nil && (
+		contains(err.Error(), git.ErrRefNotFound.Error()) ||
+		contains(err.Error(), "git ref not found"))
+}
+
+// contains reports whether s contains substr.
+func contains(s, substr string) bool {
+	for i := 0; i <= len(s)-len(substr); i++ {
+		if s[i:i+len(substr)] == substr {
+			return true
 		}
 	}
-	return lines
+	return false
 }
