@@ -5,12 +5,12 @@
 - [x] 1.1  Set up Go module (`go mod init`, `go get chi/yaml.v3`), directory layout (`cmd/cr-server`, `internal/domain`, `internal/api`, `internal/domain/yaml`, `internal/api/routes`)
 - [x] 1.2  Define domain types in `internal/domain/walkthrough.go` (Walkthrough, Step discriminated union, all typed step structs)
 - [x] 1.3  Implement YAML parser in `internal/domain/yaml/parser.go` + round-trip tests in `testdata/`
-- [ ] 1.4  Set up Chi router in `internal/api/server.go` with CORS, logger, compression middleware; add `GET /api/health`
-- [ ] 1.5  Implement `GET /api/walkthroughs` (list with metadata) in `internal/api/routes/walkthroughs.go`
-- [ ] 1.6  Implement `GET /api/walkthroughs/:id` (full walkthrough) in `internal/api/routes/walkthroughs.go`
-- [ ] 1.7  Implement `GET /api/files/content` (file at ref+lines) in `internal/api/routes/files.go` — reads from local disk path, no git yet
-- [ ] 1.8  Write `Makefile` (`make build`, `make dev`, `make run`) and `cmd/cr-server/main.go` entrypoint
-- [ ] 1.9  Write unit tests: parser tests, API handler tests with `httptest`
+- [x] 1.4  Set up Chi router in `internal/api/server.go` with CORS, logger, compression middleware; add `GET /api/health`
+- [x] 1.5  Implement `GET /api/walkthroughs` (list with metadata) in `internal/api/`
+- [x] 1.6  Implement `GET /api/walkthroughs/:id` (full walkthrough) in `internal/api/`
+- [x] 1.7  Implement `GET /api/files/content` (file at ref+lines) in `internal/api/files.go` — reads from local disk path, no git yet
+- [x] 1.8  Write `Makefile` (`make build`, `make dev`, `make run`) and `cmd/cr-server/main.go` entrypoint
+- [x] 1.9  Write unit tests: parser tests, API handler tests with `httptest`
 
 ## Phase 2: Go backend — Git integration (go-git, diff, refs)
 

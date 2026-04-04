@@ -461,7 +461,68 @@ Diary written, bookkeeping updated. The ticket now has:
 
 ### What should be done in the future
 
-1. Move on to task 1.4 (Chi router, API server setup)
-2. Implement task 1.5 (GET /api/walkthroughs endpoint)
-3. Write the API handler tests with httptest
-4. Commit the Phase 1 Go backend scaffold
+1. ~~Move on to task 1.4 (Chi router, API server setup)~~ — DONE
+2. ~~Implement task 1.5 (GET /api/walkthroughs endpoint)~~ — DONE
+3. ~~Write the API handler tests with httptest~~ — DONE
+4. Phase 2: Git integration with go-git
+5. Commit the Phase 1 Go backend scaffold
+
+---
+
+## Step 9: Tasks 1.4–1.9 — HTTP Server, API Endpoints, Tests
+
+**User prompt (verbatim):** "ok continue. remember to commit and keep a diary as you go."
+
+**Assistant interpretation:** Continue working through the sub-tasks for Phase 1, committing and updating the diary at each logical point.
+
+**Inferred user intent:** Complete Phase 1 (Go backend scaffold) with working API endpoints and tests.
+
+### What I did
+
+1. Initially created `internal/api/routes/walkthroughs.go` as a separate package — caused an import cycle (routes → api → domain → yaml → routes) and had dangling `import "os"` at end of file. Resolved by consolidating all handlers into the `api` package.
+2. Rewrote `internal/api/server.go` — Chi router setup, CORS/compression/logger middleware, `ListenAndRun()` with graceful shutdown via SIGINT/SIGTERM, removed unused imports (`os`, `os/signal`, `syscall`)
+3. Wrote `internal/api/walkthroughs.go` — `GET /api/walkthroughs` (list with step count), `GET /api/walkthroughs/:id` (full walkthrough), `serializeSteps()` converts domain discriminated union to JSON, `countSteps()` handles nested sections
+4. Wrote `internal/api/files.go` — `GET /api/files/content` with query params validation, range limits (max 500 lines), proper HTTP status codes (400, 404, 416), TODO comment for Phase 2 git integration
+5. Wrote `cmd/cr-server/main.go` — flag parsing, wired to `api.ListenAndRun()`
+6. Wrote `Makefile` — `build`, `run`, `dev`, `test`, `lint`, `fmt`, `tidy`, `clean`
+7. Created sample repo files: `src/middleware/auth.ts`, `src/utils/token.ts`
+8. Wrote `internal/api/api_test.go` — 5 tests: health, list, get, file content, writeError
+9. Ran smoke test via tmux: all endpoints return correct JSON
+
+### What worked
+
+**Consolidating into one package**: All handlers live in `api` package, avoiding import cycles. The `api` package is the natural owner of both server setup and handlers.
+
+**Smoke testing with tmux**: Starting the server in a tmux session (`tmux new-session -d -s cr-server "..."`) and curling from the host is the cleanest approach. Background `&` + `timeout` approach doesn't work reliably in this environment.
+
+**The API response shape**: Walking through the domain discriminated union in `serializeStep()` and calling `writeJSON` directly produces clean JSON. The `[2]int` for `LineRange` serializes to JSON arrays automatically.
+
+### What didn't work
+
+**Import cycle attempt**: Initially tried to put routes in `internal/api/routes` as a separate package. Since routes needed `api.writeJSON`, and the root `api` package would import domain, there was no cycle — but it was more complexity than needed. Single `api` package is simpler.
+
+**Dangling import at file end**: Wrote `import "os"` at the bottom of `walkthroughs.go` as a single-line stray. The `write` tool placed it there accidentally.
+
+**Background server + curl**: `timeout 5 ./bin/cr-server &` followed by `curl` doesn't reliably work. The process exits when the terminal closes. tmux is the right tool.
+
+### What I learned
+
+**Chi router mounting pattern**: Routes mounted with `r.Route("/api/walkthroughs", func(api chi.Router) { handleWalkthroughsRoutes(api, dir) })` — the test must mirror this structure, wrapping the route in the same chi router with the same path prefix. Requests to `/api/walkthroughs` must go to a router that has that path prefix mounted.
+
+**The discriminated union serializes naturally**: Each `case s.Source != nil:` in `serializeStep()` produces a flat JSON object with `type` and fields. RTK Query on the frontend will receive this as-is.
+
+### What was tricky to build
+
+**Getting the test router structure right**: The first test failures (`404 page not found`) were because the test created `chi.NewRouter()` and called `handleWalkthroughsRoutes(r, dir)`, but then requested `/api/walkthroughs`. The Chi router in `handleWalkthroughsRoutes` only mounts at `/`, so `/api/walkthroughs` was never matched. Fixed by wrapping in `r.Route("/api/walkthroughs", func(api chi.Router) { ... })` in the test.
+
+### What warrants a second pair of eyes
+
+1. **Phase 2 git integration**: The `handleFileContent` currently reads from disk path. The `TODO` comment marks this clearly, but Phase 2 needs to wire in go-git properly so `ref` is respected.
+2. **`countSteps` for step count**: Currently counts section.Steps recursively. Verify this matches what the frontend needs for the step strip.
+
+### What should be done in the future
+
+1. Phase 2: git integration with go-git — replace the `TODO` in `files.go`
+2. Implement `GET /api/files/diff` endpoint
+3. Implement `GET /api/repos/:repo/refs` (list branches/tags)
+4. Start the React frontend scaffold (Phase 3)
