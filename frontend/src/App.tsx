@@ -1,62 +1,85 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useParams } from 'react-router-dom';
-import { CRWalkthrough, ThemeProvider } from '@crs-cradle/cr-walkthrough';
+import { CRWalkthrough, ThemeProvider, useTheme } from '@crs-cradle/cr-walkthrough';
 
 // ── App shell ───────────────────────────────────────────────────────
 
 function AppShell() {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
+  // CRWalkthrough's ThemeProvider calls this when its internal theme changes
+  // so we can sync the outer chrome to the same value.
+  const handleThemeChange = useCallback((t: 'dark' | 'light') => {
+    setTheme(t);
+  }, []);
+
   return (
     <ThemeProvider initialTheme={theme}>
-      <div
+      <Shell theme={theme} onThemeChange={handleThemeChange} />
+    </ThemeProvider>
+  );
+}
+
+// Shell must be inside ThemeProvider so it can use useTheme().
+function Shell({
+  theme,
+  onThemeChange,
+}: {
+  theme: 'dark' | 'light';
+  onThemeChange: (t: 'dark' | 'light') => void;
+}) {
+  const { setTheme } = useTheme();
+
+  const handleToggle = (t: 'dark' | 'light') => {
+    setTheme(t);
+    onThemeChange(t);
+  };
+
+  return (
+    <div
+      data-theme={theme}
+      style={{
+        minHeight: '100vh',
+        background: 'var(--cr-color-bg)',
+        color: 'var(--cr-color-text)',
+        fontFamily: 'var(--cr-font-sans)',
+        fontSize: 'var(--cr-font-size-root)',
+      }}
+    >
+      {/* Top bar */}
+      <header
         style={{
-          minHeight: '100vh',
-          background: 'var(--cr-color-bg)',
-          color: 'var(--cr-color-text)',
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: 'var(--cr-space-4) var(--cr-space-6)',
+          borderBottom: '1px solid var(--cr-color-border)',
+          background: 'var(--cr-color-surface)',
         }}
       >
-        {/* Top bar */}
-        <header
+        <span
           style={{
-            position: 'sticky',
-            top: 0,
-            zIndex: 10,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '12px 24px',
-            borderBottom: '1px solid var(--cr-color-border)',
-            background: 'var(--cr-color-surface)',
+            fontWeight: 600,
+            fontSize: 'var(--cr-font-size-base)',
+            color: 'var(--cr-color-text)',
           }}
         >
-          <span
-            style={{
-              fontWeight: 600,
-              fontSize: 'var(--cr-font-size-base)',
-              color: 'var(--cr-color-text)',
-            }}
-          >
-            Code Review Walkthrough
-          </span>
-          <ThemeToggle theme={theme} setTheme={setTheme} />
-        </header>
+          Code Review Walkthrough
+        </span>
+        <ThemeToggle theme={theme} onToggle={handleToggle} />
+      </header>
 
-        {/* Routes */}
-        <main>
-          <Routes>
-            <Route
-              path="/"
-              element={<HomePrompt />}
-            />
-            <Route
-              path="/wt/:id"
-              element={<WalkthroughPage />}
-            />
-          </Routes>
-        </main>
-      </div>
-    </ThemeProvider>
+      {/* Routes */}
+      <main>
+        <Routes>
+          <Route path="/" element={<HomePrompt />} />
+          <Route path="/wt/:id" element={<WalkthroughPage onThemeChange={handleToggle} />} />
+        </Routes>
+      </main>
+    </div>
   );
 }
 
@@ -75,6 +98,7 @@ function HomePrompt() {
         minHeight: '60vh',
         gap: 'var(--cr-space-6)',
         textAlign: 'center',
+        padding: '0 var(--cr-space-6)',
       }}
     >
       <div>
@@ -85,6 +109,7 @@ function HomePrompt() {
             fontWeight: 'var(--cr-font-weight-bold)',
             letterSpacing: '-0.02em',
             color: 'var(--cr-color-text)',
+            lineHeight: 'var(--cr-line-height-tight)',
           }}
         >
           Code Review Walkthroughs
@@ -111,6 +136,7 @@ function HomePrompt() {
           fontWeight: 600,
           fontSize: 'var(--cr-font-size-base)',
           cursor: 'pointer',
+          transition: 'opacity 0.15s',
         }}
       >
         Start: PR #482 — Refactor auth middleware
@@ -119,21 +145,25 @@ function HomePrompt() {
   );
 }
 
-// ── Walkthrough page ───────────────────────────────────────────────
+// ── Walkthrough page ────────────────────────────────────────────────
 
-function WalkthroughPage() {
+function WalkthroughPage({
+  onThemeChange,
+}: {
+  onThemeChange: (t: 'dark' | 'light') => void;
+}) {
   const { id } = useParams();
-  return <CRWalkthrough walkthroughId={id} />;
+  return <CRWalkthrough walkthroughId={id} onThemeChange={onThemeChange} />;
 }
 
 // ── Theme toggle ────────────────────────────────────────────────────
 
 function ThemeToggle({
   theme,
-  setTheme,
+  onToggle,
 }: {
   theme: 'dark' | 'light';
-  setTheme: (t: 'dark' | 'light') => void;
+  onToggle: (t: 'dark' | 'light') => void;
 }) {
   return (
     <div
@@ -150,7 +180,7 @@ function ThemeToggle({
       {(['dark', 'light'] as const).map((t) => (
         <button
           key={t}
-          onClick={() => setTheme(t)}
+          onClick={() => onToggle(t)}
           aria-pressed={theme === t}
           style={{
             padding: '4px 12px',

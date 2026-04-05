@@ -4,6 +4,7 @@ export * from './types';
 export * from './parts';
 export * from './api/walkthroughsApi';
 export { CRWalkthrough, ThemeProvider, useTheme } from './components/CRWalkthrough';
+export type { ThemeProviderProps } from './components/CRWalkthrough';
 export { StepCard } from './renderers/StepCard';
 export { StepRendererRegistry, STEP_TYPE_META } from './renderers/StepRendererRegistry';
 export { FileBadge } from './components/FileBadge';

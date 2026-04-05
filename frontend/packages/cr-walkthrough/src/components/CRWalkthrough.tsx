@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { PARTS } from '../parts';
 import { StepCard } from '../renderers/StepCard';
 import { useGetWalkthroughQuery } from '../api/walkthroughsApi';
@@ -20,7 +20,7 @@ const ThemeContext = createContext<ThemeContextValue>({
 
 export const useTheme = () => useContext(ThemeContext);
 
-interface ThemeProviderProps {
+export interface ThemeProviderProps {
   children: React.ReactNode;
   initialTheme?: Theme;
 }
@@ -52,6 +52,8 @@ interface CRWalkthroughProps {
   tokens?: Record<string, string>;
   /** Called when a branch step option is selected */
   onBranch?: (gotoId: string) => void;
+  /** Called when the widget theme changes so the outer chrome can sync */
+  onThemeChange?: (theme: Theme) => void;
 }
 
 // ── Component ───────────────────────────────────────────────────────
@@ -63,8 +65,15 @@ export const CRWalkthrough: React.FC<CRWalkthroughProps> = ({
   unstyled = false,
   tokens,
   onBranch,
+  onThemeChange,
 }) => {
   const { theme } = useTheme();
+
+  // Notify the outer chrome when the theme changes.
+  useEffect(() => {
+    onThemeChange?.(theme);
+  }, [theme, onThemeChange]);
+
   const { data, isLoading, isError, error } =
     useGetWalkthroughQuery(walkthroughId!, { skip: !walkthroughId });
 
