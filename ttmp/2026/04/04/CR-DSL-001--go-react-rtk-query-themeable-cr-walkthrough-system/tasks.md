@@ -31,6 +31,7 @@
 - [x] 3.6  Write `CRWalkthrough.tsx` root component with `ThemeProvider` context + `data-widget` / `data-theme` attributes
 - [x] 3.7  Set up `frontend/storybook/` with `@storybook/react-vite`, preview with both themes
 - [x] 3.8  Write Storybook Introduction page + stories (95 stories across 18 story files)
+  - ⚠️  Storybook dev server stuck on "Content is loading..." — JSON Schema error. See `reference/03-storybook-status-report.md` for details.
 
 ## Phase 4: React frontend — RTK Query API layer + MSW mocks
 
