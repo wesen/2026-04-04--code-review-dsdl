@@ -1,0 +1,9 @@
+- generic [ref=e3]:
+  - main [ref=e5]:
+    - generic [ref=e9]:
+      - progressbar "Content is loading..." [ref=e11]
+      - iframe [ref=e13]:
+        
+  - button "Open navigation menu" [ref=e16]:
+    - img [ref=e17]
+    - paragraph

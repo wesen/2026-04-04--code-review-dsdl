@@ -44,8 +44,8 @@ export const handlers = [
 
     // Generic fallback.
     const lines = Array.from(
-      { length: end - start + 1 },
-      (_, i) => `// line ${start + i}`
+      { length: Math.max(end - start + 1, 1) },
+      (_, i) => `// ${path || 'file.ts'}:${start + i}`
     );
     return HttpResponse.json({ ref, path, start, end, lines });
   }),

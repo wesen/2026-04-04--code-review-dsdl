@@ -684,3 +684,118 @@ Following the user's go-minitrace Storybook pattern directly avoids re-inventing
 2. Phase 5: `SourceRenderer`, `DiffRenderer`, `CompareRenderer` — add MSW handlers so they return fixture data in Storybook
 3. Phase 7: go:embed SPA into binary — wire Vite build output into Go binary
 4. Phase 8: reMarkable upload
+
+---
+
+## Step 12: Fix go:embed + HTTP Serving Bugs (Three Compounding Issues)
+
+A colleague's bug report (`reference/05-go-embed-path-bug-report.md`) reported that the SPA returns 404 for all non-API routes after `make build`. The report correctly identified a `cp -r` nesting issue but missed two other independent bugs. After independent analysis, I found three compounding bugs: (1) `cp -r frontend/dist static/` creates `static/dist/dist/` when `static/dist/` already exists (which it always does after a fresh `git clone` because build artifacts were committed), (2) `http.FileServer(http.FS(static.Dist))` looks up files by URL path without the `dist/` prefix, so even with correct embed layout, static assets (JS, CSS, images) return 404 despite the existence check passing, and (3) `static/dist/` contents should never have been committed to git. All three are now fixed.
+
+### Prompt Context
+
+**User prompt (verbatim):** "@ttmp/2026/04/04/CR-DSL-001--go-react-rtk-query-themeable-cr-walkthrough-system/reference/05-go-embed-path-bug-report.md — Address these issues from your colleague, they're struggling with the HTTP server. Explain what's going on after doing your own analysis."
+
+**Assistant interpretation:** Read the bug report, independently verify the claims against the actual codebase, determine root cause(s), fix all issues, and explain what's going on.
+
+**Inferred user intent:** Unblock the colleague by correctly diagnosing and fixing the HTTP server SPA serving bugs, not just applying the bug report's recommended fix (which was itself wrong).
+
+### What I did
+
+1. Read the bug report (`reference/05-go-embed-path-bug-report.md`) end-to-end
+2. Read all three implicated files independently: `Makefile`, `static/embed.go`, `internal/api/server.go`
+3. Verified on-disk state: `static/dist/` contains flat files (no nesting) because `copy-static` had already been run once on a clean dir — but the nesting would reproduce on any re-run since `static/dist/` now exists
+4. Verified that `static/dist/` contents (all 7 files including `README.txt` placeholder) are tracked by git via `git ls-files -- static/`
+5. Identified Bug 1: `cp -r frontend/dist static/` when `static/dist/` exists creates `static/dist/dist/` — the bug report's recommended fix (`cp -r frontend/dist static/dist`) would *always* nest, making it worse
+6. Identified Bug 2: `http.FileServer(http.FS(static.Dist)).ServeHTTP(w, r)` uses the raw URL path to look up files — for `/favicon.svg` it looks for `favicon.svg` in the embed FS, but the file lives at `dist/favicon.svg`
+7. Identified Bug 3: Build artifacts (`static/dist/*`) committed to git — triggers Bug 1 on clone and is bad practice
+8. Fixed `Makefile` `copy-static` target: added `rm -rf static/dist` before `cp -r`
+9. Fixed `internal/api/server.go`: added `fs.Sub(static.Dist, "dist")` to strip the `dist/` prefix, created package-level `distFileServer` and `distHTTPFS`, updated `spaFallbackHandler` to use the sub-FS throughout
+10. Added `"io/fs"` to imports in `server.go`
+11. Added `static/dist/` to `.gitignore`
+12. Ran `git rm -r --cached static/dist/` to untrack the 7 build artifacts
+13. Verified: `go build ./...` and `go vet ./...` both pass clean
+
+### Why
+
+The colleague's report only saw the nesting symptom and proposed a fix that would make it worse. The `http.FileServer` bug was invisible in the report because it's masked by the nesting — if you fix only the nesting, static assets still 404 via the `http.FileServer` code path. The `fs.Sub` approach is the standard Go pattern for stripping a prefix directory from an `embed.FS` before handing it to `http.FileServer`.
+
+### What worked
+
+**Independent analysis**: Reading the codebase fresh rather than trusting the bug report's diagnosis revealed two additional bugs. The `fs.Sub` pattern is clean and well-understood in Go.
+
+**Verifying on-disk state**: `find static -type f | sort` showed the files are currently flat (not nested), which means `copy-static` had run once on a clean `static/dist/`. The nesting only reproduces on re-run — explaining why the colleague saw it intermittently.
+
+**`go build ./...` and `go vet ./...`**: Both pass with zero output, confirming the code changes are syntactically and semantically correct.
+
+### What didn't work
+
+**The bug report's Option A fix**: The report recommended changing `cp -r frontend/dist static/` to `cp -r frontend/dist static/dist`. But when `static/dist/` already exists (which it does after git clone or a previous build), `cp -r src dst/` copies src *into* dst, creating `static/dist/dist/`. The correct fix is `rm -rf static/dist && cp -r frontend/dist static/`.
+
+### What I learned
+
+**`cp -r` behavior with existing destination directories**: `cp -r frontend/dist static/` copies `dist/` into `static/dist/` if the destination directory exists, creating `static/dist/dist/`. If it doesn't exist, it creates `static/dist/` with the contents. This is a classic shell scripting footgun.
+
+**`fs.Sub` is the right tool for `embed.FS` + `http.FileServer`**: When you have `//go:embed dist` (which embeds with a `dist/` prefix) and want `http.FileServer` to serve by URL path, `fs.Sub(fs, "dist")` strips the prefix so URL paths match embed paths directly.
+
+**Never commit build artifacts**: The `static/dist/` directory was committed with all 7 files including a `README.txt` placeholder. This both bloats the repo and creates the conditions for Bug 1 (directory exists before `copy-static` runs).
+
+### What was tricky to build
+
+**Diagnosing Bug 2 (the `http.FileServer` path mismatch)**: This bug is completely invisible when Bug 1 is present, because the nesting causes `Open("dist/" + path)` to fail before the `http.FileServer` code path is even reached. If you fix only Bug 1, Bug 2 reveals itself: the existence check (`Open("dist" + path)`) passes because the file is at `dist/favicon.svg`, but `http.FileServer` then tries to serve `favicon.svg` (no prefix) from the same FS and gets a 404. The two bugs mask each other in opposite directions.
+
+**The bug report's recommended fix was itself a bug**: Changing `cp -r frontend/dist static/` to `cp -r frontend/dist static/dist` would make the nesting *always* happen (not just on re-run), making the situation strictly worse than the original.
+
+### What warrants a second pair of eyes
+
+1. **`fs.Sub` error handling**: `var distFS, _ = fs.Sub(static.Dist, "dist")` — the error is discarded because `fs.Sub` only errors if the prefix is malformed (it doesn't check existence). This is safe but worth confirming.
+2. **Package-level file server variables**: `distFS`, `distHTTPFS`, and `distFileServer` are initialized at package level. If `static.Dist` is empty (no `static/dist/` directory at build time), these will be empty/nil. The `spaFallbackHandler` already handles this with the `"SPA index.html not embedded"` error message, but verify the `http.FileServer` doesn't panic on an empty FS.
+3. **Clean build from scratch**: After `git rm -r --cached static/dist/`, a fresh clone has no `static/dist/` directory. Running `make build` should create it via `build-frontend` → `copy-static`. Verify this works end-to-end.
+
+### What should be done in the future
+
+1. **End-to-end smoke test**: Run `make clean && make build` then `./bin/cr-server` and verify both API (`/api/health`) and SPA (`/`) return 200.
+2. **Add a CI check**: Verify that `static/dist/` is never accidentally committed again (e.g., a git hook or CI step that checks for tracked files in `static/dist/`).
+3. **Phase 7.6 (smoke test)**: When that task is done, it should catch these regressions automatically.
+
+### Code review instructions
+
+- Start in `internal/api/server.go` — look at the three package-level variables (`distFS`, `distHTTPFS`, `distFileServer`) and trace how `spaFallbackHandler` uses them. Compare with the old version to see the `fs.Sub` fix.
+- Then check `Makefile` — the `copy-static` target now does `rm -rf static/dist` before `cp -r`.
+- Then check `.gitignore` — `static/dist/` is now ignored.
+- Verify: `git status` should show `static/dist/` files as deleted (untracked), not modified.
+- Build: `go build ./...` and `go vet ./...` should pass clean.
+
+### Technical details
+
+**Files changed:**
+
+| File | Change |
+|---|---|
+| `Makefile` | `copy-static`: added `rm -rf static/dist` before `cp -r frontend/dist static/` |
+| `internal/api/server.go` | Added `"io/fs"` import; added `fs.Sub(static.Dist, "dist")` to create prefix-stripped FS; rewrote `spaFallbackHandler` to use `distHTTPFS` and `distFileServer` |
+| `.gitignore` | Added `static/dist/` |
+| Git index | Untracked all `static/dist/*` files (7 files removed from index) |
+
+**The `fs.Sub` pattern (new `server.go` code):**
+
+```go
+var distFS, _ = fs.Sub(static.Dist, "dist")
+var distHTTPFS = http.FS(distFS)
+var distFileServer = http.FileServer(distHTTPFS)
+```
+
+This strips the `dist/` prefix from the embed FS. Now:
+- `distHTTPFS.Open("index.html")` finds `dist/index.html` in the embed ✅
+- `distHTTPFS.Open("favicon.svg")` finds `dist/favicon.svg` in the embed ✅
+- `http.FileServer(distHTTPFS)` serves `/favicon.svg` → `favicon.svg` in sub-FS → `dist/favicon.svg` in embed ✅
+
+**The old broken code:**
+
+```go
+// Open with prefix — works for existence check:
+static.Dist.Open("dist" + path)  // "dist/favicon.svg" ✅ finds file
+
+// But http.FileServer uses raw URL path — no prefix:
+http.FileServer(http.FS(static.Dist)).ServeHTTP(w, r)
+//   Looks for "favicon.svg" in embed FS → 404 ❌
+```

@@ -53,7 +53,9 @@ export const SourceRenderer: React.FC<Props> = ({
               const ln = step.lines[0] + i;
               const [hl0, hl1] = step.highlight ?? [];
               const isHighlight =
-                step.highlight &&
+                step.highlight !== undefined &&
+                hl0 !== undefined &&
+                hl1 !== undefined &&
                 ln >= hl0 &&
                 ln <= hl1;
               return (

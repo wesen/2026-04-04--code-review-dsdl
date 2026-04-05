@@ -1,8 +1,7 @@
 import React from 'react';
 import { PARTS } from '../parts';
-import { StepRendererRegistry } from './StepRendererRegistry';
 import { StepCard } from './StepCard';
-import type { SectionStep, Step } from '../types';
+import type { SectionStep } from '../types';
 
 interface Props {
   step: SectionStep;

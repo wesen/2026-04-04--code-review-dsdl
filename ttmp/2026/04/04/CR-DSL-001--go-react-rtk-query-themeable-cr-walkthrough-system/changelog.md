@@ -1,5 +1,21 @@
 # Changelog
 
+## 2026-04-05
+
+### Fix go:embed + HTTP serving bugs (three compounding issues)
+
+Fixed three bugs preventing the SPA from being served after `make build`:
+
+1. **`cp -r` nesting**: `cp -r frontend/dist static/` creates `static/dist/dist/` when `static/dist/` already exists (always after `git clone`). Fix: `rm -rf static/dist` before `cp -r`.
+2. **`http.FileServer` path mismatch**: `http.FileServer(http.FS(static.Dist))` looks up files by URL path without the `dist/` prefix. Fix: `fs.Sub(static.Dist, "dist")` strips the prefix.
+3. **Build artifacts committed**: `static/dist/` was tracked in git. Fix: `git rm -r --cached static/dist/` + `.gitignore`.
+
+Files: `Makefile`, `internal/api/server.go`, `.gitignore`, git index.
+
+See `reference/01-investigation-diary.md` Step 12 for full details.
+
+---
+
 ## 2026-04-04
 
 ### Phase 3: React frontend scaffold (Tasks 3.1–3.8)

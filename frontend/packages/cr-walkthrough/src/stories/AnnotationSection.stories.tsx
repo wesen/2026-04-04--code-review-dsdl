@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 import { AnnotationRenderer } from '../renderers/AnnotationRenderer';
-import type { AnnotationStep, AnnotationSeverity } from '../types';
+import { SourceRenderer } from '../renderers/SourceRenderer';
+import type { AnnotationStep, AnnotationSeverity, SourceStep } from '../types';
 
 const wrap = (story: React.ReactNode) => (
   <div style={{ background: '#101114', padding: 24, borderRadius: 8 }}>
@@ -74,8 +75,8 @@ export const AnnotationShort: StoryObj<{ step: AnnotationStep }> = {
 };
 
 // ── Source renderer (with mocked RTK query) ───────────────────────
-// SourceRenderer calls useGetFileContentQuery — we mock it via the store in preview.tsx.
-// These stories use the pre-seeded fixture data from preview.tsx.
+// SourceRenderer calls useGetFileContentQuery. Storybook preview provides
+// the Redux store plus lightweight /api/files/content fixtures.
 
 export const SourceRendererStory: StoryObj = {
   name: 'SourceRenderer (from fixture)',
@@ -89,23 +90,20 @@ export const SourceRendererStory: StoryObj = {
   parameters: {
     layout: 'padded',
   },
-  render: () => {
-    const { SourceRenderer } = require('../renderers/SourceRenderer');
-    return (
-      <SourceRenderer
-        step={{
-          type: 'source',
-          file: 'src/utils/token.ts',
-          lines: [12, 48],
-          highlight: [30, 35],
-          ref: 'feat/auth-refactor',
-        }}
-      />
-    );
-  },
+  render: () => (
+    <SourceRenderer
+      step={{
+        type: 'source',
+        file: 'src/utils/token.ts',
+        lines: [12, 48],
+        highlight: [30, 35],
+        ref: 'feat/auth-refactor',
+      }}
+    />
+  ),
 };
 
-export const SourceRendererLongFile: StoryObj = {
+export const SourceRendererLongFile: StoryObj<{ step: SourceStep }> = {
   name: 'SourceRenderer — long file path',
   decorators: [
     (Story) => (
@@ -117,22 +115,19 @@ export const SourceRendererLongFile: StoryObj = {
   parameters: {
     layout: 'padded',
   },
-  render: () => {
-    const { SourceRenderer } = require('../renderers/SourceRenderer');
-    return (
-      <SourceRenderer
-        step={{
-          type: 'source',
-          file: 'src/features/auth/middleware/verifyToken.ts',
-          lines: [1, 20],
-          highlight: [5, 10],
-        }}
-      />
-    );
-  },
+  render: () => (
+    <SourceRenderer
+      step={{
+        type: 'source',
+        file: 'src/features/auth/middleware/verifyToken.ts',
+        lines: [1, 20],
+        highlight: [5, 10],
+      }}
+    />
+  ),
 };
 
-export const SourceRendererNoHighlight: StoryObj = {
+export const SourceRendererNoHighlight: StoryObj<{ step: SourceStep }> = {
   name: 'SourceRenderer — no highlight',
   decorators: [
     (Story) => (
@@ -144,21 +139,18 @@ export const SourceRendererNoHighlight: StoryObj = {
   parameters: {
     layout: 'padded',
   },
-  render: () => {
-    const { SourceRenderer } = require('../renderers/SourceRenderer');
-    return (
-      <SourceRenderer
-        step={{
-          type: 'source',
-          file: 'src/config.ts',
-          lines: [1, 10],
-        }}
-      />
-    );
-  },
+  render: () => (
+    <SourceRenderer
+      step={{
+        type: 'source',
+        file: 'src/config.ts',
+        lines: [1, 10],
+      }}
+    />
+  ),
 };
 
-export const SourceRendererWithNote: StoryObj = {
+export const SourceRendererWithNote: StoryObj<{ step: SourceStep }> = {
   name: 'SourceRenderer — with note',
   decorators: [
     (Story) => (
@@ -170,18 +162,15 @@ export const SourceRendererWithNote: StoryObj = {
   parameters: {
     layout: 'padded',
   },
-  render: () => {
-    const { SourceRenderer } = require('../renderers/SourceRenderer');
-    return (
-      <SourceRenderer
-        step={{
-          type: 'source',
-          file: 'src/utils/token.ts',
-          lines: [12, 48],
-          highlight: [30, 35],
-          note: 'New verifyToken helper — note the fallback on L34.',
-        }}
-      />
-    );
-  },
+  render: () => (
+    <SourceRenderer
+      step={{
+        type: 'source',
+        file: 'src/utils/token.ts',
+        lines: [12, 48],
+        highlight: [30, 35],
+        note: 'New verifyToken helper — note the fallback on L34.',
+      }}
+    />
+  ),
 };

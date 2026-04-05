@@ -13,6 +13,13 @@
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
+
+    /* Paths — mirrors vite.config.ts alias */
+    "baseUrl": ".",
+    "paths": {
+      "@crs-cradle/cr-walkthrough": ["packages/cr-walkthrough/src"],
+      "@crs-cradle/cr-walkthrough/*": ["packages/cr-walkthrough/src/*"]
+    },
     "noEmit": true,
     "jsx": "react-jsx",
 

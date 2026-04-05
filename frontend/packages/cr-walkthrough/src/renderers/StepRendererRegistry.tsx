@@ -42,8 +42,6 @@ interface Props {
 }
 
 export const StepRendererRegistry: React.FC<Props> = ({ step, depth, onGoto }) => {
-  const props = { step, depth, onGoto };
-
   switch (step.type) {
     case 'text':
       return <TextRenderer step={step as TextStep} />;

@@ -1,0 +1,66 @@
+- generic [ref=e3]:
+  - main [ref=e5]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - button "Remount component" [ref=e9] [cursor=pointer]:
+          - img [ref=e10]
+        - button "Zoom in" [ref=e12] [cursor=pointer]:
+          - img [ref=e13]
+        - button "Zoom out" [ref=e16] [cursor=pointer]:
+          - img [ref=e17]
+        - button "Reset zoom" [ref=e20] [cursor=pointer]:
+          - img [ref=e21]
+        - button "Apply a grid to the preview" [ref=e24] [cursor=pointer]:
+          - img [ref=e25]
+        - button "Change the size of the preview" [ref=e28] [cursor=pointer]:
+          - img [ref=e29]
+        - button "Enable measure" [ref=e33] [cursor=pointer]:
+          - img [ref=e34]
+        - button "Apply outlines to the preview" [ref=e37] [cursor=pointer]:
+          - img [ref=e38]
+      - generic [ref=e40]:
+        - button "Go full screen" [ref=e41] [cursor=pointer]:
+          - img [ref=e42]
+        - link "Open canvas in new tab" [ref=e44] [cursor=pointer]:
+          - /url: iframe.html?id=stories-annotationsection--annotation-warn
+          - img [ref=e45]
+        - button "Copy canvas link" [ref=e48] [cursor=pointer]:
+          - img [ref=e49]
+    - generic [ref=e53]:
+      - progressbar "Content is loading..." [ref=e55]
+      - generic [ref=e56]:
+        - link "Skip to sidebar" [ref=e57] [cursor=pointer]:
+          - /url: "#stories-annotationsection--annotation-warn"
+        - iframe [ref=e58]:
+          
+  - navigation [ref=e61]:
+    - generic [ref=e65]:
+      - generic [ref=e66]:
+        - link "Skip to canvas" [ref=e67] [cursor=pointer]:
+          - /url: "#storybook-preview-wrapper"
+        - link "Storybook" [ref=e69] [cursor=pointer]:
+          - /url: ./
+          - img "Storybook" [ref=e70]
+        - button "Shortcuts" [ref=e76] [cursor=pointer]:
+          - img [ref=e77]
+      - generic [ref=e80]: Search for components
+      - generic [ref=e81]:
+        - combobox "Search for components" [ref=e82]:
+          - generic:
+            - img
+          - searchbox "Search for components" [ref=e83]
+          - code: ⌃ K
+        - button [ref=e85] [cursor=pointer]:
+          - img [ref=e86]
+  - generic [ref=e114]:
+    - tablist [ref=e116]:
+      - tab "Controls" [ref=e117] [cursor=pointer]:
+        - generic [ref=e120]: Controls
+      - tab "Actions" [ref=e121] [cursor=pointer]:
+        - generic [ref=e124]: Actions
+      - tab "Code" [ref=e125] [cursor=pointer]
+    - generic [ref=e128]:
+      - button "Change addon orientation [alt D]" [ref=e129] [cursor=pointer]:
+        - img [ref=e130]
+      - button "Hide addons [alt A]" [ref=e133] [cursor=pointer]:
+        - img [ref=e134]

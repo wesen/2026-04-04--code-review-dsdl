@@ -41,10 +41,6 @@ export const walkthroughsApi = createApi({
         `/files/content?ref=${encodeURIComponent(ref)}&path=${encodeURIComponent(
           path
         )}&start=${start}&end=${end}`,
-      serializeQueryArgs: ({ endpointName }) => endpointName,
-      merge: (_current, incoming) => incoming,
-      forceRefetch: ({ currentArg, previousArg }) =>
-        JSON.stringify(currentArg) !== JSON.stringify(previousArg),
     }),
 
     getFileDiff: builder.query<

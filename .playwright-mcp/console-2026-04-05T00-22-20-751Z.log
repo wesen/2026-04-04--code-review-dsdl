@@ -1,0 +1,115 @@
+[     474ms] [ERROR] %o
+
+%s
+
+%s
+ ReferenceError: require is not defined
+    at Object.render [as originalStoryFn] (http://localhost:6008/packages/cr-walkthrough/src/stories/AnnotationSection.stories.tsx:135:30)
+    at undecoratedStoryFn (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6916:55)
+    at hookified (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:5766:11)
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6865:6
+    at jsxDecorator (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/chunk-EWIU6LHT-DmSLtbKy.js?v=9a41eba1:7993:14)
+    at hookified (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:5766:11)
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6852:16
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6865:6
+    at Object.react_stack_bottom_frame (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:12868:12)
+    at renderWithHooks (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:4213:19) The above error occurred in one of your React components. React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary. @ http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:5273
+[     475ms] [ERROR] Error rendering story 'stories-annotationsection--source-renderer-story': @ http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:4514
+[     476ms] [ERROR] ReferenceError: require is not defined
+    at Object.render [as originalStoryFn] (http://localhost:6008/packages/cr-walkthrough/src/stories/AnnotationSection.stories.tsx:135:30)
+    at undecoratedStoryFn (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6916:55)
+    at hookified (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:5766:11)
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6865:6
+    at jsxDecorator (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/chunk-EWIU6LHT-DmSLtbKy.js?v=9a41eba1:7993:14)
+    at hookified (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:5766:11)
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6852:16
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6865:6
+    at Object.react_stack_bottom_frame (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:12868:12)
+    at renderWithHooks (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:4213:19) @ http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:4514
+[  131530ms] [ERROR] Error loading story index: @ http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:4514
+[  131530ms] [ERROR] TypeError: Failed to fetch @ http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:4514
+[  131546ms] [ERROR] %c manager %c received %cconfigError%c but was unable to determine the source of the event color: #37D5D3; background: black  color: #FF4785  @ http://localhost:6008/sb-manager/globals-runtime.js:6451
+[  131704ms] [ERROR] %o
+
+%s
+
+%s
+ ReferenceError: require is not defined
+    at Object.render [as originalStoryFn] (http://localhost:6008/packages/cr-walkthrough/src/stories/AnnotationSection.stories.tsx:135:30)
+    at undecoratedStoryFn (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6916:55)
+    at hookified (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:5766:11)
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6865:6
+    at jsxDecorator (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/chunk-EWIU6LHT-DmSLtbKy.js?v=9a41eba1:7993:14)
+    at hookified (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:5766:11)
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6852:16
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6865:6
+    at Object.react_stack_bottom_frame (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:12868:12)
+    at renderWithHooks (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:4213:19) The above error occurred in one of your React components. React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary. @ http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:5273
+[  131705ms] [ERROR] Error rendering story 'stories-annotationsection--source-renderer-story': @ http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:4514
+[  131705ms] [ERROR] ReferenceError: require is not defined
+    at Object.render [as originalStoryFn] (http://localhost:6008/packages/cr-walkthrough/src/stories/AnnotationSection.stories.tsx:135:30)
+    at undecoratedStoryFn (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6916:55)
+    at hookified (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:5766:11)
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6865:6
+    at jsxDecorator (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/chunk-EWIU6LHT-DmSLtbKy.js?v=9a41eba1:7993:14)
+    at hookified (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:5766:11)
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6852:16
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6865:6
+    at Object.react_stack_bottom_frame (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:12868:12)
+    at renderWithHooks (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:4213:19) @ http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:4514
+[  134048ms] [ERROR] %o
+
+%s
+
+%s
+ ReferenceError: require is not defined
+    at Object.render [as originalStoryFn] (http://localhost:6008/packages/cr-walkthrough/src/stories/AnnotationSection.stories.tsx:169:30)
+    at undecoratedStoryFn (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6916:55)
+    at hookified (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:5766:11)
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6865:6
+    at jsxDecorator (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/chunk-EWIU6LHT-DmSLtbKy.js?v=9a41eba1:7993:14)
+    at hookified (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:5766:11)
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6852:16
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6865:6
+    at Object.react_stack_bottom_frame (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:12868:12)
+    at renderWithHooks (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:4213:19) The above error occurred in one of your React components. React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary. @ http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:5273
+[  134049ms] [ERROR] Error rendering story 'stories-annotationsection--source-renderer-long-file': @ http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:4514
+[  134049ms] [ERROR] ReferenceError: require is not defined
+    at Object.render [as originalStoryFn] (http://localhost:6008/packages/cr-walkthrough/src/stories/AnnotationSection.stories.tsx:169:30)
+    at undecoratedStoryFn (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6916:55)
+    at hookified (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:5766:11)
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6865:6
+    at jsxDecorator (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/chunk-EWIU6LHT-DmSLtbKy.js?v=9a41eba1:7993:14)
+    at hookified (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:5766:11)
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6852:16
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6865:6
+    at Object.react_stack_bottom_frame (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:12868:12)
+    at renderWithHooks (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:4213:19) @ http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:4514
+[  134870ms] [ERROR] %o
+
+%s
+
+%s
+ ReferenceError: require is not defined
+    at Object.render [as originalStoryFn] (http://localhost:6008/packages/cr-walkthrough/src/stories/AnnotationSection.stories.tsx:234:30)
+    at undecoratedStoryFn (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6916:55)
+    at hookified (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:5766:11)
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6865:6
+    at jsxDecorator (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/chunk-EWIU6LHT-DmSLtbKy.js?v=9a41eba1:7993:14)
+    at hookified (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:5766:11)
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6852:16
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6865:6
+    at Object.react_stack_bottom_frame (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:12868:12)
+    at renderWithHooks (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:4213:19) The above error occurred in one of your React components. React will try to recreate this component tree from scratch using the error boundary you provided, ErrorBoundary. @ http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:5273
+[  134871ms] [ERROR] Error rendering story 'stories-annotationsection--source-renderer-with-note': @ http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:4514
+[  134871ms] [ERROR] ReferenceError: require is not defined
+    at Object.render [as originalStoryFn] (http://localhost:6008/packages/cr-walkthrough/src/stories/AnnotationSection.stories.tsx:234:30)
+    at undecoratedStoryFn (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6916:55)
+    at hookified (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:5766:11)
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6865:6
+    at jsxDecorator (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/chunk-EWIU6LHT-DmSLtbKy.js?v=9a41eba1:7993:14)
+    at hookified (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:5766:11)
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6852:16
+    at http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:6865:6
+    at Object.react_stack_bottom_frame (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:12868:12)
+    at renderWithHooks (http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/client-66j5YL8l.js?v=9a41eba1:4213:19) @ http://localhost:6008/node_modules/.cache/storybook/1e8d972d900bca133086bd0f2a507dc200194c3a4e84ff3ab0634962711df360/sb-vite/deps/storybook_internal_preview_runtime.js?v=9a41eba1:4514

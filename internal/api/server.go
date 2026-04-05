@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -16,14 +18,15 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/crs-cradle/cr-walkthrough/internal/domain/git"
+	"github.com/crs-cradle/cr-walkthrough/static"
 )
 
 // Config holds the server configuration.
 type Config struct {
-	WalkthroughsDir string             // directory containing .yaml walkthrough files
-	RepoPath        string             // root path of the git repository to serve files from
-	RepoService    git.RepoService     // git service (nil = use default NewRepoService)
-	Port           int
+	WalkthroughsDir string        // directory containing .yaml walkthrough files
+	RepoPath        string        // root path of the git repository to serve files from
+	RepoService     git.RepoService // git service (nil = use default NewRepoService)
+	Port            int
 }
 
 // Server is the HTTP server.
@@ -62,6 +65,10 @@ func NewServer(cfg Config) *Server {
 	r.Route("/api/repos", func(r chi.Router) {
 		handleReposRoutes(r, cfg.RepoPath, repoSvc)
 	})
+
+	// SPA fallback: serve the embedded React app for any non-API route so
+	// React Router can handle client-side routing.
+	r.NotFound(spaFallbackHandler)
 
 	return &Server{
 		httpServer: &http.Server{
@@ -138,6 +145,8 @@ func corsMiddleware() func(http.Handler) http.Handler {
 	}
 }
 
+// ── Response helpers ─────────────────────────────────────────────────
+
 // writeJSON writes a JSON response.
 func writeJSON(w http.ResponseWriter, status int, v interface{}) {
 	w.WriteHeader(status)
@@ -150,4 +159,48 @@ func writeJSON(w http.ResponseWriter, status int, v interface{}) {
 // writeError writes a JSON error response.
 func writeError(w http.ResponseWriter, status int, format string, args ...interface{}) {
 	writeJSON(w, status, map[string]string{"error": fmt.Sprintf(format, args...)})
+}
+
+// ── SPA fallback ─────────────────────────────────────────────────────
+
+// spaFallbackHandler serves the embedded React SPA for any non-API route.
+// It first tries to serve the exact file; if missing it falls back to index.html
+// so React Router can handle client-side routing.
+//
+// The embed.FS has a top-level "dist/" directory. We use fs.Sub to strip that
+// prefix so http.FileServer can serve files by URL path without knowing
+// about the dist/ prefix.
+var distFS, _ = fs.Sub(static.Dist, "dist")
+var distHTTPFS = http.FS(distFS)
+var distFileServer = http.FileServer(distHTTPFS)
+
+func spaFallbackHandler(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path
+
+	// For non-root paths, try to serve the exact asset first.
+	if path != "/" {
+		// Open via the sub-FS (no "dist/" prefix needed — fs.Sub stripped it).
+		f, err := distHTTPFS.Open(path[1:]) // strip leading "/"
+		if err == nil {
+			f.Close()
+			distFileServer.ServeHTTP(w, r)
+			return
+		}
+	}
+
+	// Fall back to /index.html for the SPA route.
+	f, err := distHTTPFS.Open("index.html")
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "SPA index.html not embedded (run 'make build' first)")
+		return
+	}
+	defer f.Close()
+	data, err := io.ReadAll(f)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to read index.html")
+		return
+	}
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 }

@@ -7,6 +7,7 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./mocks": "./src/mocks/handlers.ts",
     "./tokens": "./src/tokens.css",
     "./theme-dark": "./src/theme-dark.css",
     "./theme-light": "./src/theme-light.css"

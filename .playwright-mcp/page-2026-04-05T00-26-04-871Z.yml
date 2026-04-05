@@ -1,0 +1,374 @@
+- generic [ref=e3]:
+  - main [ref=e5]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - button "Remount component" [ref=e9] [cursor=pointer]:
+          - img [ref=e10]
+        - button "Zoom in" [ref=e12] [cursor=pointer]:
+          - img [ref=e13]
+        - button "Zoom out" [ref=e16] [cursor=pointer]:
+          - img [ref=e17]
+        - button "Reset zoom" [ref=e20] [cursor=pointer]:
+          - img [ref=e21]
+        - button "Change the background of the preview" [ref=e387] [cursor=pointer]:
+          - img [ref=e388]
+        - button "Apply a grid to the preview" [ref=e24] [cursor=pointer]:
+          - img [ref=e25]
+        - button "Change the size of the preview" [ref=e28] [cursor=pointer]:
+          - img [ref=e29]
+        - button "Enable measure" [ref=e33] [cursor=pointer]:
+          - img [ref=e34]
+        - button "Apply outlines to the preview" [ref=e37] [cursor=pointer]:
+          - img [ref=e38]
+      - generic [ref=e40]:
+        - button "Go full screen" [ref=e41] [cursor=pointer]:
+          - img [ref=e42]
+        - link "Open canvas in new tab" [ref=e44] [cursor=pointer]:
+          - /url: iframe.html?globals=&id=stories-compare--default
+          - img [ref=e45]
+        - button "Copy canvas link" [ref=e48] [cursor=pointer]:
+          - img [ref=e49]
+    - generic [ref=e56]:
+      - link "Skip to sidebar" [ref=e57] [cursor=pointer]:
+        - /url: "#stories-compare--default"
+      - iframe [ref=e58]:
+        - generic [ref=f8e7]:
+          - generic [ref=f8e8]:
+            - generic [ref=f8e9]:
+              - generic [ref=f8e10]: before
+              - generic [ref=f8e11]:
+                - generic [ref=f8e12]: src/routes/users.ts
+                - generic [ref=f8e13]: main L10–30
+              - generic [ref=f8e14]:
+                - generic [ref=f8e15]:
+                  - generic [ref=f8e16]: "10"
+                  - generic [ref=f8e17]: export const listUsersOffset = (page = 1) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e18]:
+                  - generic [ref=f8e19]: "11"
+                  - generic [ref=f8e20]: export const listUsersOffset = (page = 2) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e21]:
+                  - generic [ref=f8e22]: "12"
+                  - generic [ref=f8e23]: export const listUsersOffset = (page = 3) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e24]:
+                  - generic [ref=f8e25]: "13"
+                  - generic [ref=f8e26]: export const listUsersOffset = (page = 4) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e27]:
+                  - generic [ref=f8e28]: "14"
+                  - generic [ref=f8e29]: export const listUsersOffset = (page = 5) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e30]:
+                  - generic [ref=f8e31]: "15"
+                  - generic [ref=f8e32]: export const listUsersOffset = (page = 6) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e33]:
+                  - generic [ref=f8e34]: "16"
+                  - generic [ref=f8e35]: export const listUsersOffset = (page = 7) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e36]:
+                  - generic [ref=f8e37]: "17"
+                  - generic [ref=f8e38]: export const listUsersOffset = (page = 8) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e39]:
+                  - generic [ref=f8e40]: "18"
+                  - generic [ref=f8e41]: export const listUsersOffset = (page = 9) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e42]:
+                  - generic [ref=f8e43]: "19"
+                  - generic [ref=f8e44]: export const listUsersOffset = (page = 10) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e45]:
+                  - generic [ref=f8e46]: "20"
+                  - generic [ref=f8e47]: export const listUsersOffset = (page = 11) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e48]:
+                  - generic [ref=f8e49]: "21"
+                  - generic [ref=f8e50]: export const listUsersOffset = (page = 12) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e51]:
+                  - generic [ref=f8e52]: "22"
+                  - generic [ref=f8e53]: export const listUsersOffset = (page = 13) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e54]:
+                  - generic [ref=f8e55]: "23"
+                  - generic [ref=f8e56]: export const listUsersOffset = (page = 14) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e57]:
+                  - generic [ref=f8e58]: "24"
+                  - generic [ref=f8e59]: export const listUsersOffset = (page = 15) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e60]:
+                  - generic [ref=f8e61]: "25"
+                  - generic [ref=f8e62]: export const listUsersOffset = (page = 16) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e63]:
+                  - generic [ref=f8e64]: "26"
+                  - generic [ref=f8e65]: export const listUsersOffset = (page = 17) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e66]:
+                  - generic [ref=f8e67]: "27"
+                  - generic [ref=f8e68]: export const listUsersOffset = (page = 18) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e69]:
+                  - generic [ref=f8e70]: "28"
+                  - generic [ref=f8e71]: export const listUsersOffset = (page = 19) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e72]:
+                  - generic [ref=f8e73]: "29"
+                  - generic [ref=f8e74]: export const listUsersOffset = (page = 20) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e75]:
+                  - generic [ref=f8e76]: "30"
+                  - generic [ref=f8e77]: export const listUsersOffset = (page = 21) => db.users.offset(page * 20).limit(20);
+            - generic [ref=f8e78]:
+              - generic [ref=f8e79]: after
+              - generic [ref=f8e80]:
+                - generic [ref=f8e81]: src/routes/users.ts
+                - generic [ref=f8e82]: feat/cursor-pagination L10–38
+              - generic [ref=f8e83]:
+                - generic [ref=f8e84]:
+                  - generic [ref=f8e85]: "10"
+                  - generic [ref=f8e86]: export const listUsersOffset = (page = 1) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e87]:
+                  - generic [ref=f8e88]: "11"
+                  - generic [ref=f8e89]: export const listUsersOffset = (page = 2) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e90]:
+                  - generic [ref=f8e91]: "12"
+                  - generic [ref=f8e92]: export const listUsersOffset = (page = 3) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e93]:
+                  - generic [ref=f8e94]: "13"
+                  - generic [ref=f8e95]: export const listUsersOffset = (page = 4) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e96]:
+                  - generic [ref=f8e97]: "14"
+                  - generic [ref=f8e98]: export const listUsersOffset = (page = 5) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e99]:
+                  - generic [ref=f8e100]: "15"
+                  - generic [ref=f8e101]: export const listUsersOffset = (page = 6) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e102]:
+                  - generic [ref=f8e103]: "16"
+                  - generic [ref=f8e104]: export const listUsersOffset = (page = 7) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e105]:
+                  - generic [ref=f8e106]: "17"
+                  - generic [ref=f8e107]: export const listUsersOffset = (page = 8) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e108]:
+                  - generic [ref=f8e109]: "18"
+                  - generic [ref=f8e110]: export const listUsersOffset = (page = 9) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e111]:
+                  - generic [ref=f8e112]: "19"
+                  - generic [ref=f8e113]: export const listUsersOffset = (page = 10) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e114]:
+                  - generic [ref=f8e115]: "20"
+                  - generic [ref=f8e116]: export const listUsersOffset = (page = 11) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e117]:
+                  - generic [ref=f8e118]: "21"
+                  - generic [ref=f8e119]: export const listUsersOffset = (page = 12) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e120]:
+                  - generic [ref=f8e121]: "22"
+                  - generic [ref=f8e122]: export const listUsersOffset = (page = 13) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e123]:
+                  - generic [ref=f8e124]: "23"
+                  - generic [ref=f8e125]: export const listUsersOffset = (page = 14) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e126]:
+                  - generic [ref=f8e127]: "24"
+                  - generic [ref=f8e128]: export const listUsersOffset = (page = 15) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e129]:
+                  - generic [ref=f8e130]: "25"
+                  - generic [ref=f8e131]: export const listUsersOffset = (page = 16) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e132]:
+                  - generic [ref=f8e133]: "26"
+                  - generic [ref=f8e134]: export const listUsersOffset = (page = 17) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e135]:
+                  - generic [ref=f8e136]: "27"
+                  - generic [ref=f8e137]: export const listUsersOffset = (page = 18) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e138]:
+                  - generic [ref=f8e139]: "28"
+                  - generic [ref=f8e140]: export const listUsersOffset = (page = 19) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e141]:
+                  - generic [ref=f8e142]: "29"
+                  - generic [ref=f8e143]: export const listUsersOffset = (page = 20) => db.users.offset(page * 20).limit(20);
+                - generic [ref=f8e144]:
+                  - generic [ref=f8e145]: "30"
+                  - generic [ref=f8e146]: export const listUsersOffset = (page = 21) => db.users.offset(page * 20).limit(20);
+          - paragraph [ref=f8e147]: Old offset vs new cursor approach side-by-side.
+  - navigation [ref=e61]:
+    - generic [ref=e64]:
+      - generic [ref=e65]:
+        - generic [ref=e66]:
+          - link "Skip to canvas" [ref=e67] [cursor=pointer]:
+            - /url: "#storybook-preview-wrapper"
+          - link "Storybook" [ref=e69] [cursor=pointer]:
+            - /url: ./
+            - img "Storybook" [ref=e70]
+          - button "Shortcuts" [ref=e76] [cursor=pointer]:
+            - img [ref=e77]
+        - generic [ref=e80]: Search for components
+        - generic [ref=e81]:
+          - combobox "Search for components" [ref=e82]:
+            - generic:
+              - img
+            - searchbox "Search for components" [ref=e83]
+            - code: ⌃ K
+            - button "Tag filters" [ref=e141] [cursor=pointer]:
+              - img [ref=e142]
+          - button [ref=e85] [cursor=pointer]:
+            - img [ref=e86]
+        - generic [ref=e144]:
+          - img
+          - generic [ref=e145]:
+            - button "stories" [expanded] [ref=e146] [cursor=pointer]:
+              - img [ref=e148]
+              - text: stories
+            - button "Collapse" [ref=e150] [cursor=pointer]:
+              - img [ref=e151]
+          - button "AnnotationSection" [ref=e154] [cursor=pointer]:
+            - generic [ref=e155]:
+              - img [ref=e157]
+              - img [ref=e159]
+            - text: AnnotationSection
+          - button "Branch" [ref=e162] [cursor=pointer]:
+            - generic [ref=e163]:
+              - img [ref=e165]
+              - img [ref=e167]
+            - text: Branch
+          - button "CRWalkthrough" [ref=e170] [cursor=pointer]:
+            - generic [ref=e171]:
+              - img [ref=e173]
+              - img [ref=e175]
+            - text: CRWalkthrough
+          - button "Checkpoint" [ref=e178] [cursor=pointer]:
+            - generic [ref=e179]:
+              - img [ref=e181]
+              - img [ref=e183]
+            - text: Checkpoint
+          - button "CodeBlock" [ref=e186] [cursor=pointer]:
+            - generic [ref=e187]:
+              - img [ref=e189]
+              - img [ref=e191]
+            - text: CodeBlock
+          - button "CodeLine" [ref=e194] [cursor=pointer]:
+            - generic [ref=e195]:
+              - img [ref=e197]
+              - img [ref=e199]
+            - text: CodeLine
+          - button "CodeRenderer" [ref=e202] [cursor=pointer]:
+            - generic [ref=e203]:
+              - img [ref=e205]
+              - img [ref=e207]
+            - text: CodeRenderer
+          - button "Compare" [expanded] [ref=e210] [cursor=pointer]:
+            - generic [ref=e211]:
+              - img [ref=e213]
+              - img [ref=e215]
+            - text: Compare
+          - link "Docs" [ref=e218] [cursor=pointer]:
+            - /url: /?path=/docs/stories-compare--docs
+            - img [ref=e220]
+            - text: Docs
+          - generic [ref=e222]:
+            - link "Default" [ref=e223] [cursor=pointer]:
+              - /url: /?path=/story/stories-compare--default
+              - img [ref=e225]
+              - text: Default
+            - link "Skip to canvas" [ref=e227] [cursor=pointer]:
+              - /url: "#storybook-preview-wrapper"
+          - link "With Note" [ref=e229] [cursor=pointer]:
+            - /url: /?path=/story/stories-compare--with-note
+            - img [ref=e231]
+            - text: With Note
+          - link "Different Files" [ref=e234] [cursor=pointer]:
+            - /url: /?path=/story/stories-compare--different-files
+            - img [ref=e236]
+            - text: Different Files
+          - button "DiffRenderer" [ref=e239] [cursor=pointer]:
+            - generic [ref=e240]:
+              - img [ref=e242]
+              - img [ref=e244]
+            - text: DiffRenderer
+          - button "FileBadge" [ref=e247] [cursor=pointer]:
+            - generic [ref=e248]:
+              - img [ref=e250]
+              - img [ref=e252]
+            - text: FileBadge
+          - button "LinkRenderer" [ref=e255] [cursor=pointer]:
+            - generic [ref=e256]:
+              - img [ref=e258]
+              - img [ref=e260]
+            - text: LinkRenderer
+          - button "Note" [ref=e263] [cursor=pointer]:
+            - generic [ref=e264]:
+              - img [ref=e266]
+              - img [ref=e268]
+            - text: Note
+          - button "Reveal" [ref=e271] [cursor=pointer]:
+            - generic [ref=e272]:
+              - img [ref=e274]
+              - img [ref=e276]
+            - text: Reveal
+          - button "Section" [ref=e279] [cursor=pointer]:
+            - generic [ref=e280]:
+              - img [ref=e282]
+              - img [ref=e284]
+            - text: Section
+          - button "ShellRenderer" [ref=e287] [cursor=pointer]:
+            - generic [ref=e288]:
+              - img [ref=e290]
+              - img [ref=e292]
+            - text: ShellRenderer
+          - button "StepCard" [ref=e295] [cursor=pointer]:
+            - generic [ref=e296]:
+              - img [ref=e298]
+              - img [ref=e300]
+            - text: StepCard
+          - button "TextRenderer" [ref=e303] [cursor=pointer]:
+            - generic [ref=e304]:
+              - img [ref=e306]
+              - img [ref=e308]
+            - text: TextRenderer
+      - link "Storybook 10 Learn what's new in Storybook" [ref=e354] [cursor=pointer]:
+        - /url: /?path=/settings/whats-new
+        - img [ref=e356]
+        - generic [ref=e358]:
+          - generic "Storybook 10" [ref=e359]
+          - generic [ref=e360]: Learn what's new in Storybook
+        - button "Dismiss notification" [ref=e361]:
+          - img [ref=e362]
+  - generic [ref=e112]:
+    - generic [ref=e114]:
+      - tablist [ref=e116]:
+        - tab "Controls 1" [ref=e391] [cursor=pointer]:
+          - generic [ref=e119]:
+            - generic [ref=e120]: Controls
+            - generic [ref=e392]: "1"
+        - tab "Actions" [ref=e121] [cursor=pointer]:
+          - generic [ref=e124]: Actions
+      - generic [ref=e128]:
+        - button "Change addon orientation [alt D]" [ref=e129] [cursor=pointer]:
+          - img [ref=e130]
+        - button "Hide addons [alt A]" [ref=e133] [cursor=pointer]:
+          - img [ref=e134]
+    - table [ref=e395]:
+      - rowgroup [ref=e396]:
+        - row "Name Control" [ref=e397]:
+          - columnheader "Name" [ref=e398]
+          - columnheader "Control" [ref=e399]:
+            - generic [ref=e400]:
+              - text: Control
+              - button "Reset controls" [ref=e401] [cursor=pointer]:
+                - img [ref=e402]
+      - rowgroup [ref=e404]:
+        - 'row "step* RAW step : { type : \"compare\" left : {...} 3 keys right : {...} 3 keys note : \"Old offset vs new cursor approach side-by-side.\" }" [ref=e405]':
+          - cell "step*" [ref=e406]
+          - 'cell "RAW step : { type : \"compare\" left : {...} 3 keys right : {...} 3 keys note : \"Old offset vs new cursor approach side-by-side.\" }" [ref=e407]':
+            - generic [ref=e408]:
+              - button "RAW" [ref=e409] [cursor=pointer]:
+                - img [ref=e410]
+                - generic [ref=e413]: RAW
+              - generic [ref=e415]:
+                - generic [ref=e417]: "step :"
+                - generic [ref=e418]:
+                  - text: "{"
+                  - img [ref=e419] [cursor=pointer]
+                  - list [ref=e422]:
+                    - listitem [ref=e423]:
+                      - generic [ref=e424]: "type :"
+                      - generic [ref=e425]: "\"compare\""
+                      - img [ref=e426] [cursor=pointer]
+                    - generic [ref=e429]:
+                      - generic [ref=e431]: "left :"
+                      - generic [ref=e432]:
+                        - generic [ref=e433]: "{...} 3 keys"
+                        - img [ref=e434] [cursor=pointer]
+                    - generic [ref=e437]:
+                      - generic [ref=e439]: "right :"
+                      - generic [ref=e440]:
+                        - generic [ref=e441]: "{...} 3 keys"
+                        - img [ref=e442] [cursor=pointer]
+                    - listitem [ref=e445]:
+                      - generic [ref=e446]: "note :"
+                      - generic [ref=e447]: "\"Old offset vs new cursor approach side-by-side.\""
+                      - img [ref=e448] [cursor=pointer]
+                  - text: "}"
+                  - img [ref=e451] [cursor=pointer]

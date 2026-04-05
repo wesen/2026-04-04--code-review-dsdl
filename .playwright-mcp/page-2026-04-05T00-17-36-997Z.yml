@@ -1,0 +1,36 @@
+- generic [ref=e3]:
+  - main [ref=e5]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - button "Remount component" [ref=e9] [cursor=pointer]:
+          - img [ref=e10]
+        - button "Zoom in" [ref=e12] [cursor=pointer]:
+          - img [ref=e13]
+        - button "Zoom out" [ref=e16] [cursor=pointer]:
+          - img [ref=e17]
+        - button "Reset zoom" [ref=e20] [cursor=pointer]:
+          - img [ref=e21]
+        - button "Apply a grid to the preview" [ref=e24] [cursor=pointer]:
+          - img [ref=e25]
+        - button "Change the size of the preview" [ref=e28] [cursor=pointer]:
+          - img [ref=e29]
+        - button "Enable measure" [ref=e33] [cursor=pointer]:
+          - img [ref=e34]
+        - button "Apply outlines to the preview" [ref=e37] [cursor=pointer]:
+          - img [ref=e38]
+      - generic [ref=e40]:
+        - link "Open canvas in new tab" [ref=e41] [cursor=pointer]:
+          - /url: iframe.html?id=stories-annotationsection--annotation-warn
+          - img [ref=e42]
+        - button "Copy canvas link" [ref=e45] [cursor=pointer]:
+          - img [ref=e46]
+    - generic [ref=e50]:
+      - progressbar "Content is loading..." [ref=e52]
+      - iframe [ref=e54]:
+        
+  - generic [ref=e56]:
+    - button "Open navigation menu" [ref=e57]:
+      - img [ref=e58]
+      - paragraph
+    - button "Open addon panel" [ref=e60] [cursor=pointer]:
+      - img [ref=e61]
