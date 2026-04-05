@@ -37,6 +37,7 @@ function Shell({
 
   return (
     <div
+      data-widget="cr-walkthrough"
       data-theme={theme}
       style={{
         minHeight: '100vh',
