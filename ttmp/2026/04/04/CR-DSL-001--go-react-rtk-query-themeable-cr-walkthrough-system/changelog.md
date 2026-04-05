@@ -20,7 +20,29 @@ See `reference/01-investigation-diary.md` Step 12 for full details.
 
 ### Phase 3: React frontend scaffold (Tasks 3.1–3.8)
 
-Full frontend scaffold: 95 stories across 18 story files. TypeScript clean. Storybook builds.
+Full frontend scaffold: 95 stories across 18 story files. TypeScript clean. Storybook builds. Colleague fixed three compounding issues (JSON Schema error → missing theme CSS, CJS require in ESM, RTK Query cache key collision).
+
+### Phase 4: RTK Query + MSW app wiring (Tasks 4.1–4.6)
+
+App shell wired: MSW service worker, Redux store, React Router, ThemeProvider, `/api` proxy.
+
+- `frontend/src/main.tsx`: MSW `worker.start()` (dev) + Redux `Provider`
+- `frontend/src/App.tsx`: React Router, `HomePrompt`, `WalkthroughPage`, `ThemeToggle`
+- `frontend/src/store/index.ts`: Redux store with `walkthroughsApi.reducer`
+- `frontend/src/mocks/browser.ts`: `setupWorker(...packageHandlers)`
+- `frontend/src/mocks/handlers.ts`: re-exports from `@crs-cradle/cr-walkthrough/mocks`
+- `frontend/vite.config.ts`: `/api` proxy → `http://localhost:8080`
+- `frontend/tsconfig.app.json`: paths alias for `@crs-cradle/cr-walkthrough`
+- TypeScript fixes: unused imports, undefined checks in SourceRenderer
+
+### Phase 7: go:embed SPA into binary (Tasks 7.1–7.6)
+
+Three compounding bugs fixed (colleague + AI): `cp -r` nesting, `http.FileServer` path mismatch, committed build artifacts.
+
+- `static/embed.go`: `//go:embed dist` (populated by `make copy-static`)
+- `internal/api/server.go`: `fs.Sub(static.Dist, "dist")` strips prefix, `spaFallbackHandler` serves SPA
+- `Makefile`: `build` → `build-frontend` + `copy-static` + `go build`; `dev-api` for `go run` dev
+- E2E smoke test passed: `/` → 200, `/api/health` → 200, `/wt/auth-refactor` → 200, walkthrough renders
 
 - `packages/cr-walkthrough/`: local workspace package (`workspace:` in root package.json)
   - `types.ts`: all 12 step types + discriminated union + Walkthrough/FileContent/DiffContent

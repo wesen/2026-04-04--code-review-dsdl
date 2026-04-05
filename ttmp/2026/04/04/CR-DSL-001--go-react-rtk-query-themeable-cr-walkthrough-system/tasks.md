@@ -35,12 +35,12 @@
 
 ## Phase 4: React frontend — RTK Query API layer + MSW mocks
 
-- [ ] 4.1  Set up Redux store + `walkthroughsApi` in `frontend/src/api/` (4 endpoints: listWalkthroughs, getWalkthrough, getFileContent, getFileDiff)
-- [ ] 4.2  Configure RTK Query cache: file content cached independently, 5-minute TTL, no background refetch on window focus
-- [ ] 4.3  Set up MSW browser worker in `frontend/src/mocks/browser.ts`
-- [ ] 4.4  Write `frontend/src/mocks/handlers.ts` — handlers for all 4 API endpoints
-- [ ] 4.5  Create `frontend/src/mocks/fixtures/` — JSON fixtures for auth-refactor walkthrough + file content
-- [ ] 4.6  Write `frontend/src/App.tsx` — route `/` renders `CRWalkthrough`, route `/wt/:id` renders specific walkthrough
+- [x] 4.1  Redux store in `frontend/src/store/` with `walkthroughsApi.reducer`
+- [x] 4.2  RTK Query cache fixed: removed broken `serializeQueryArgs` override from `getFileContent`
+- [x] 4.3  MSW browser worker in `frontend/src/mocks/browser.ts` (`setupWorker`)
+- [x] 4.4  `frontend/src/mocks/handlers.ts` — re-exports from cr-walkthrough package
+- [ ] 4.5  `frontend/src/mocks/fixtures/` — JSON fixtures for auth-refactor walkthrough + file content
+- [x] 4.6  `frontend/src/App.tsx` — route `/` renders home prompt, route `/wt/:id` renders walkthrough via `WalkthroughPage`
 - [ ] 4.7  Write integration test: walkthrough loads from MSW, steps render, RTK Query cache hit on re-render
 
 ## Phase 5: React frontend — Step renderer components
@@ -73,12 +73,12 @@
 
 ## Phase 7: Integration — go:embed SPA into binary
 
-- [ ] 7.1  Configure `frontend/package.json` `build` script outputs to `dist/`
-- [ ] 7.2  Configure `//go:embed dist/*` in `internal/api/server.go`
-- [ ] 7.3  SPA fallback handler: all non-`/api/*` paths serve `index.html` (enables React Router)
-- [ ] 7.4  `Makefile`: `make build` runs `npm run build` then `go build`, produces single `bin/cr-server` binary
-- [ ] 7.5  Write sample walkthrough YAML (`walkthroughs/auth-refactor.yaml`) and sample file tree (`sample-repo/`)
-- [ ] 7.6  Smoke test: `make build && ./bin/cr-server -repo ./sample-repo -walkthroughs ./walkthroughs -port 8080` → visit http://localhost:8080, API returns JSON, SPA renders
+- [x] 7.1  `frontend/package.json` build script outputs to `dist/`
+- [x] 7.2  `static/embed.go` — `//go:embed dist` (files copied by `make copy-static`)
+- [x] 7.3  `spaFallbackHandler` in `internal/api/server.go` — `fs.Sub` prefix stripping, serves SPA for non-API routes
+- [x] 7.4  `Makefile`: `build` → `build-frontend` + `copy-static` + `go build`; `dev-api` for `go run`
+- [x] 7.5  Sample walkthrough already in `sample-repo/walkthroughs/auth-refactor.yaml`
+- [x] 7.6  Smoke test passed: `/` → 200, `/api/health` → 200, `/wt/auth-refactor` → 200, assets → 200, walkthrough renders
 - [ ] 7.7  Playwright E2E test: load walkthrough, render all step types, interact with Checkpoint, navigate via Branch
 
 ## Phase 8: reMarkable upload

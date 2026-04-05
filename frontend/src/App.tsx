@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate, useParams } from 'react-router-dom';
 import { CRWalkthrough, ThemeProvider } from '@crs-cradle/cr-walkthrough';
 
 // ── App shell ───────────────────────────────────────────────────────
@@ -51,7 +51,7 @@ function AppShell() {
             />
             <Route
               path="/wt/:id"
-              element={<CRWalkthrough />}
+              element={<WalkthroughPage />}
             />
           </Routes>
         </main>
@@ -117,6 +117,13 @@ function HomePrompt() {
       </button>
     </div>
   );
+}
+
+// ── Walkthrough page ───────────────────────────────────────────────
+
+function WalkthroughPage() {
+  const { id } = useParams();
+  return <CRWalkthrough walkthroughId={id} />;
 }
 
 // ── Theme toggle ────────────────────────────────────────────────────

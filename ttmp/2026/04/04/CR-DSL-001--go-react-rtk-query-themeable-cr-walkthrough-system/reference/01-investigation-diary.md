@@ -799,3 +799,162 @@ static.Dist.Open("dist" + path)  // "dist/favicon.svg" ✅ finds file
 http.FileServer(http.FS(static.Dist)).ServeHTTP(w, r)
 //   Looks for "favicon.svg" in embed FS → 404 ❌
 ```
+
+---
+
+## Step 13: Phase 4 App Shell + Phase 7 go:embed Attempt + TypeScript Fixes
+
+**Commit (code):** `c0186b5` — "CR-DSL-001: Phase 4 + Phase 7 fixes (Steps 12–13)"
+
+### Prompt Context
+
+**User prompt (verbatim):** "Continue your normal implementation work"
+
+**Assistant interpretation:** The colleague had fixed the Storybook (report at `reference/04-storybook-fixing-report.md`). Pick up Phase 4 (RTK Query + MSW app wiring) and Phase 7 (go:embed). Remove the dev/prod dual-mode embed approach — use vite proxy in dev, go:embed only for the single binary production build.
+
+**Inferred user intent:** Wire the app together so `npm run dev` proxies `/api` to the Go backend, and `make build` produces a single embedded binary.
+
+### What I did
+
+**Phase 4 — App shell:**
+
+1. Ran `cd frontend && npx msw init public/ --save` to install the MSW service worker into `frontend/public/`
+2. Added `@crs-cradle/cr-walkthrough` as `workspace:*` dependency in root `frontend/package.json` (was already there from npm workspace setup, just verified)
+3. Removed unused `@tanstack/react-query` from `frontend/package.json`
+4. Added `tsconfig.app.json` paths alias for `@crs-cradle/cr-walkthrough` → `packages/cr-walkthrough/src`
+5. Removed the vite alias for `@crs-cradle/cr-walkthrough` from `vite.config.ts` — npm workspaces resolves it without the alias
+6. Added subpath export `"./mocks"` to `packages/cr-walkthrough/package.json` for `import { handlers } from '@crs-cradle/cr-walkthrough/mocks'`
+7. Fixed `packages/cr-walkthrough/src/mocks/handlers.ts`: `getFileContent` returned raw `string[]` but RTK Query expects `{ ref, path, start, end, lines }` — added proper wrapping
+8. Wrote `frontend/src/store/index.ts` — Redux store with `walkthroughsApi.reducer`
+9. Wrote `frontend/src/mocks/browser.ts` — `setupWorker(...packageHandlers)`
+10. Wrote `frontend/src/mocks/handlers.ts` — re-exports `handlers as packageHandlers` from the package
+11. Wrote `frontend/src/main.tsx` — MSW `worker.start()` in dev, Redux `Provider`, imports token/theme CSS
+12. Wrote `frontend/src/index.css` — minimal reset (replaced Vite boilerplate)
+13. Wrote `frontend/src/App.tsx` — React Router, ThemeProvider, `HomePrompt`, `ThemeToggle`, routes `/` and `/wt/:id`
+14. Added `/api` proxy to `frontend/vite.config.ts` → `http://localhost:8080` (Go backend)
+
+**Phase 7 — go:embed (initial attempt):**
+
+15. Tried placing `embed.go` inside `internal/api/` — `//go:embed frontend/dist` failed because paths are relative to the `.go` file, not the module root. Error: `pattern frontend/dist: no matching files found`
+16. Tried symlink: `ln -s ../../../frontend/dist internal/api/frontend-dist`, then `//go:embed frontend-dist` — Go can't embed symlinked directories. Error: `cannot embed irregular file`
+17. Tried `//go:embed ../../frontend/dist` (relative from `internal/api/`) — invalid pattern syntax. `go:embed` doesn't allow `..` in paths.
+18. Created `static/` package at module root with `//go:embed ../frontend/dist` — also failed with `invalid pattern syntax`. `go:embed` genuinely can't traverse above the package directory.
+19. Abandoned the dev/prod switch approach (per user preference — use vite proxy in dev, embed only in prod).
+
+**Colleague's Storybook fixes (from `reference/04-storybook-fixing-report.md`):**
+
+20. `preview.tsx` was rewritten to add: Redux store + `walkthroughsApi.reducer`, CSS imports for tokens + themes, `data-widget="cr-walkthrough"` / `data-theme="dark"` container, lightweight fetch mocks for `/api/files/content`, `/api/files/diff`, `/api/repos/refs` (bypasses MSW for Storybook's Vite environment)
+21. `walkthroughsApi.ts`: removed `serializeQueryArgs`, `merge`, `forceRefetch` from `getFileContent` — these caused all file requests to share one cache key, breaking `CompareRenderer`
+22. `AnnotationSection.stories.tsx`: removed `require(...)` calls (CJS in ESM runtime), replaced with module-scope ESM imports
+
+**TypeScript fixes:**
+
+23. `frontend/src/main.tsx`: removed unused `React` import (React 17+ JSX transform doesn't need it)
+24. `frontend/src/App.tsx`: removed unused `React` import
+25. `frontend/src/mocks/handlers.ts`: removed unused `RequestHandler` type import
+26. `packages/cr-walkthrough/src/renderers/SectionRenderer.tsx`: removed unused `StepRendererRegistry` and `Step` imports
+27. `packages/cr-walkthrough/src/renderers/SourceRenderer.tsx`: fixed `hl0`/`hl1` possibly undefined — changed `step.highlight && ln >= hl0` to `step.highlight !== undefined && hl0 !== undefined && hl1 !== undefined && ln >= hl0`
+28. `packages/cr-walkthrough/src/renderers/StepRendererRegistry.tsx`: removed unused `props` variable
+29. `frontend/src/vite-env.d.ts`: added module declarations for CSS subpath exports (`@crs-cradle/cr-walkthrough/tokens`, etc.) so TypeScript knows they're valid imports
+
+### Why
+
+**No alias needed with npm workspaces**: With `"workspaces": ["packages/*"]` in root `package.json`, npm hoists the workspace package to `node_modules/@crs-cradle/cr-walkthrough`. Vite resolves it without any alias. The original alias was conflicting with the subpath export resolution.
+
+**MSW needs module-scope imports in stories**: MSW handlers defined at module scope are picked up by the service worker. If they're inside render functions (CJS `require`), they won't be available in the ESM Storybook environment.
+
+**RTK Query cache key bug**: `serializeQueryArgs: ({ endpointName }) => endpointName` means ALL `getFileContent` calls share one cache entry regardless of arguments. If two panes of `CompareRenderer` call the API with different files, they overwrite each other's cache. Removing the override restores per-argument caching.
+
+### What didn't work
+
+**go:embed relative path traversal**: `//go:embed ../frontend/dist` is rejected with "invalid pattern syntax". The Go embed directive only works with paths inside the package directory or below. Workaround: `make copy-static` copies the built files into the Go package directory before building, and `make build` runs both steps.
+
+**`cp -r` without clean target**: If `static/dist/` already exists, `cp -r frontend/dist static/` copies `dist/` *into* it, creating `static/dist/dist/`. Fix: `rm -rf static/dist && cp -r frontend/dist static/`. (The colleague fixed this in Step 12.)
+
+### What I learned
+
+**`go:embed` path rules**: Paths are resolved relative to the Go source file containing the directive, not the module root. You cannot use `..` or absolute paths. Workaround: `make build` step copies files into the right location first.
+
+**npm workspaces + subpath exports**: Adding `"exports": { "./mocks": "./src/mocks/handlers.ts" }` to the workspace package lets the app import from `@crs-cradle/cr-walkthrough/mocks` cleanly, without duplicating handler definitions.
+
+**RTK Query v2 cache**: Removing the broken `serializeQueryArgs` override restored correct per-argument caching. The default behavior (serialize all args) is what we want for `getFileContent` — each unique `{ ref, path, start, end }` tuple gets its own cache entry.
+
+### What warrants a second pair of eyes
+
+1. **`make copy-static` on fresh clone**: After `git clone`, `static/dist/` doesn't exist. The Makefile runs `cp -r frontend/dist static/` which creates `static/dist/`. But `frontend/dist/` also doesn't exist yet — `build-frontend` must run first. The `build` target runs `build-frontend` then `copy-static`, so the order is correct. But `build-go` alone would fail if `static/dist/` doesn't exist. Verify `build-frontend` always runs first.
+2. **MSW service worker in Storybook**: The colleague's preview.tsx uses a custom fetch mock, not MSW. Phase 4 originally planned to wire MSW into Storybook too. The current setup uses the custom fetch mock for Storybook and the real MSW service worker for the app. This is intentional separation — confirm this is the desired approach.
+3. **`workspace:*` vs versioned dep**: Using `workspace:*` means the app always uses whatever version is in `packages/cr-walkthrough/` without a version lock. For development this is fine; for releases consider pinning to a specific version.
+
+---
+
+## Step 14: go:embed Three-Compounding-Bug Fix (Colleague — see Step 12 in this diary)
+
+The colleague diagnosed and fixed three independent bugs in the embed pipeline. Full details in Step 12 above (the bug report + fix). The three bugs were:
+
+1. `cp -r frontend/dist static/` creates `static/dist/dist/` on re-runs (directory already exists)
+2. `http.FileServer(http.FS(static.Dist))` uses raw URL paths without the `dist/` embed prefix
+3. Build artifacts committed to git, creating conditions for Bug 1 on fresh clone
+
+The fixes: `rm -rf static/dist` before `cp -r`, `fs.Sub(static.Dist, "dist")` to strip the prefix, and adding `static/dist/` to `.gitignore`.
+
+---
+
+## Step 15: E2E Smoke Test + WalkthroughPage Routing Fix
+
+**Status:** Uncommitted (in `frontend/src/App.tsx`)
+
+### Prompt Context
+
+**User prompt (verbatim):** "ok let's just use only embed, no need to switch between prod and dev. Instead, we dev with vite dev and proxy the api. Look at ~/code/wesen/corporate-headquarters/go-minitrace/ui for reference"
+
+**Assistant interpretation:** After the colleague's embed fix, verify the full pipeline works: `make build` produces a working binary, API returns data, SPA serves, and the walkthrough renders.
+
+**Inferred user intent:** Confirm the app works end-to-end before moving on.
+
+### What I did
+
+1. Killed any stale server processes, rebuilt with `make copy-static && go build`
+2. Started server in tmux session `crdsl`
+3. Smoke-tested all routes:
+   - `GET /` → **200** ✅
+   - `GET /api/health` → **200** ✅
+   - `GET /api/walkthroughs` → **200** ✅
+   - `GET /api/walkthroughs/auth-refactor` → **200**, 8 steps ✅
+   - `GET /assets/index-Bi1s6eQQ.js` → **200** ✅
+
+4. Ran Playwright against `http://localhost:8087/`:
+   - Snapshot showed the full home page: header, theme toggle (Dark/Light), heading, start button ✅
+   - Console: 0 errors, 2 warnings (React Router v7 future flags) ✅
+
+5. Navigated to `/wt/auth-refactor` in Playwright:
+   - `GET /wt/auth-refactor` → **200** (SPA served `index.html`) ✅
+   - But the walkthrough content was missing — only header + theme toggle rendered
+   - Root element had the correct dark theme styles, but no step content
+
+6. **Root cause**: `<Route path="/wt/:id" element={<CRWalkthrough />}` — `CRWalkthrough` was rendered without a `walkthroughId` prop, so `useGetWalkthroughQuery(walkthroughId!)` was skipped. The component waited for `wt` to be set from the `walkthrough` prop, which was never passed.
+
+7. **Fix**: Created `WalkthroughPage` wrapper component:
+   ```tsx
+   function WalkthroughPage() {
+     const { id } = useParams();
+     return <CRWalkthrough walkthroughId={id} />;
+   }
+   ```
+   Then `<Route path="/wt/:id" element={<WalkthroughPage />} />`
+
+8. Rebuilt frontend + Go binary, restarted server in tmux:
+   - `GET /` → 200 ✅
+   - `GET /wt/auth-refactor` → 200 ✅
+   - Playwright snapshot confirmed header + walkthrough content renders
+
+### Why
+
+The `CRWalkthrough` component has two ways to load a walkthrough: via `walkthroughId` (triggers `useGetWalkthroughQuery`) or via inline `walkthrough` prop (uses fixture data directly). The route was rendering `<CRWalkthrough />` with neither — leaving it to the default `undefined` value, which skips the query and renders nothing.
+
+The `WalkthroughPage` wrapper bridges React Router (`useParams`) and `CRWalkthrough` (`walkthroughId` prop), which are two separate concerns that belong in the app layer, not inside the widget component.
+
+### What warrants a second pair of eyes
+
+1. **`CRWalkthrough` error handling**: If `walkthroughId` is set but the API returns 404, `CRWalkthrough` shows an error state. But the `WalkthroughPage` doesn't handle the `isError` case — the error is shown inside the widget. Confirm this is the desired UX.
+2. **URL encoding of walkthrough IDs**: `useParams()` returns the raw URL segment. If the walkthrough ID contains special characters (e.g., `feat/auth-refactor`), it should be URL-encoded in the URL. The current `navigate('/wt/auth-refactor')` in `HomePrompt` works because the ID has no `/`. If IDs get more complex, consider `encodeURIComponent`.
+3. **TypeScript strictness**: `useParams<string>()` — the generic should match the route pattern. With `path="/wt/:id"`, `useParams()` returns `{ id?: string }`. Confirm the TypeScript inference is correct.
