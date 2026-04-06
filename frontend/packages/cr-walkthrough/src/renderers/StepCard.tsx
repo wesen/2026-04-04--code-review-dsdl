@@ -11,13 +11,22 @@ interface Props {
   onGoto?: (goto: string) => void;
 }
 
+// Stable step anchor ID: explicit id field if present, otherwise "step-{index}".
+// "{index}" is the walkthrough-relative 1-based step number (passed from CRWalkthrough).
+function stepAnchorId(id: string | undefined, index: string): string {
+  return id ?? `step-${index}`;
+}
+
 export const StepCard: React.FC<Props> = ({ step, index, depth = 0, onGoto }) => {
   const meta = STEP_TYPE_META[step.type] ?? { icon: '?', colorVar: '--cr-color-text-step' };
+  const anchorId = stepAnchorId(step.id, index);
 
   return (
     <div
       data-part={PARTS.STEP_CARD}
       data-step-type={step.type}
+      data-step-id={anchorId}
+      id={anchorId}
       style={{
         border: '1px solid var(--cr-color-border)',
         borderRadius: 'var(--cr-radius-lg)',

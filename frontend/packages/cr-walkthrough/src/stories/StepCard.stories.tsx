@@ -226,3 +226,59 @@ export const CardBranch: StoryObj<{ step: Step; index: string }> = {
     index: '15',
   },
 };
+
+// ── M1: Step anchor stories ─────────────────────────────────────────
+
+/**
+ * A step with an explicit `id` field. The `data-step-id` attribute equals that id.
+ * Use `/wt/auth-refactor#race-condition-fix` to scroll here from anywhere in the page.
+ */
+export const StepAnchorExplicitId: StoryObj<{ step: Step; index: string }> = {
+  render: (args) => <StepCard step={args.step} index={args.index} />,
+  args: {
+    step: {
+      type: 'annotation',
+      id: 'race-condition-fix',
+      file: 'src/middleware/auth.ts',
+      line: 42,
+      severity: 'warn',
+      body: 'Race condition if token refresh fires mid-request.',
+    },
+    index: '4',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`data-step-id="race-condition-fix"` is set because the step has `id: "race-condition-fix"`. ' +
+          'Any badge pointing to `#race-condition-fix` in the same walkthrough will scroll here.',
+      },
+    },
+  },
+};
+
+/**
+ * A step with no explicit `id`. The `data-step-id` attribute is auto-generated as `step-{index}`.
+ * Use `/wt/auth-refactor#step-3` to scroll here.
+ */
+export const StepAnchorAutoId: StoryObj<{ step: Step; index: string }> = {
+  render: (args) => <StepCard step={args.step} index={args.index} />,
+  args: {
+    step: {
+      type: 'source',
+      file: 'src/utils/token.ts',
+      lines: [12, 48],
+      note: 'New verifyToken helper — note the fallback on L34.',
+    },
+    index: '3',
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`data-step-id="step-3"` is auto-generated because the step has no `id` field. ' +
+          'Fragment navigation to `#step-3` scrolls to this card.',
+      },
+    },
+  },
+};
