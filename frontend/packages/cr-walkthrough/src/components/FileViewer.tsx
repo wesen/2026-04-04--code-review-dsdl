@@ -194,19 +194,20 @@ export const FileViewer: React.FC<FileViewerProps> = ({ baseUrl, headRef, defaul
     end: state.endLine,
   });
 
-  const secondaryQuery =
-    state.compare && secondaryRef
-      ? useGetFileContentQuery({
-          ref: secondaryRef,
-          path: state.file,
-          start: state.startLine,
-          end: state.endLine,
-        })
-      : null;
-  const { data: secondaryContent, isLoading: secondaryLoading } =
-    secondaryQuery ?? { data: undefined, isLoading: false };
+  // Always call the hook (Rules of Hooks). Use skip=true when compare mode is not active
+  // or secondaryRef is unavailable so no network request fires.
+  const { data: secondaryContent, isLoading: secondaryLoading } = useGetFileContentQuery(
+    {
+      ref: secondaryRef ?? '',
+      path: state.file,
+      start: state.startLine,
+      end: state.endLine,
+    },
+    { skip: !state.compare || !secondaryRef }
+  );
 
-  const isLoading = primaryLoading || (secondaryQuery ? secondaryLoading : false);
+  // secondaryLoading is always defined (hook is always called); it is false when skip=true.
+  const isLoading = primaryLoading || secondaryLoading;
 
   // Highlight applies to the primary pane (or to whichever pane is shown).
   // In compare mode the "after" pane (primaryRef) is highlighted.
