@@ -171,9 +171,9 @@ export const FileViewer: React.FC<FileViewerProps> = ({ baseUrl, headRef, defaul
     navigate(`${baseUrl}?${newParams.toString()}`, { replace: true });
   };
 
-  // Opens the current file viewer URL in a new browser tab, then closes the overlay.
+  // Opens the standalone /file route (file-only view, no walkthrough chrome) in a new tab.
   const openInNewTab = () => {
-    const url = `${window.location.origin}${baseUrl}?${params.toString()}`;
+    const url = `${window.location.origin}/file?${params.toString()}`;
     window.open(url, '_blank', 'noopener,noreferrer');
     handleClose();
   };

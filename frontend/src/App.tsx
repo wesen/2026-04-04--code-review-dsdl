@@ -78,6 +78,7 @@ function Shell({
         <Routes>
           <Route path="/" element={<HomePrompt />} />
           <Route path="/wt/:id" element={<WalkthroughPage onThemeChange={handleToggle} />} />
+          <Route path="/file" element={<FilePage />} />
         </Routes>
       </main>
     </div>
@@ -176,6 +177,70 @@ function WalkthroughPage({
       {/* FileViewer renders when query params are present; null otherwise */}
       <FileViewer baseUrl={baseUrl} />
     </>
+  );
+}
+
+// ── Standalone file view page ─────────────────────────────────────────
+
+function FilePage() {
+  const navigate = useNavigate();
+
+  return (
+    <ThemeProvider initialTheme="dark">
+      <div
+        style={{
+          minHeight: '100vh',
+          background: 'var(--cr-color-bg)',
+          color: 'var(--cr-color-text)',
+          fontFamily: 'var(--cr-font-sans)',
+          fontSize: 'var(--cr-font-size-root)',
+        }}
+      >
+        {/* Minimal toolbar */}
+        <header
+          style={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 10,
+            display: 'flex',
+            alignItems: 'center',
+            padding: 'var(--cr-space-3) var(--cr-space-6)',
+            borderBottom: '1px solid var(--cr-color-border)',
+            background: 'var(--cr-color-surface)',
+            gap: 'var(--cr-space-4)',
+          }}
+        >
+          <button
+            onClick={() => navigate(-1)}
+            style={{
+              padding: '4px 12px',
+              borderRadius: 'var(--cr-radius-sm)',
+              border: '1px solid var(--cr-color-border)',
+              background: 'var(--cr-color-surface)',
+              color: 'var(--cr-color-text-muted)',
+              fontSize: 'var(--cr-font-size-sm)',
+              cursor: 'pointer',
+            }}
+          >
+            ← Back
+          </button>
+          <span
+            style={{
+              fontSize: 'var(--cr-font-size-sm)',
+              color: 'var(--cr-color-text-subtle)',
+              fontFamily: 'var(--cr-font-mono)',
+            }}
+          >
+            File viewer
+          </span>
+        </header>
+
+        {/* FileViewer reads its own query params — /file?file=&ref=&lines=&highlight=&compare=&compareRef= */}
+        <div style={{ padding: 'var(--cr-space-6)' }}>
+          <FileViewer baseUrl="/file" defaultMode="inline" />
+        </div>
+      </div>
+    </ThemeProvider>
   );
 }
 
