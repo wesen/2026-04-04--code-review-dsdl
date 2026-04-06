@@ -157,15 +157,15 @@ export const FileViewer: React.FC<FileViewerProps> = ({ baseUrl, headRef, defaul
   const navigate = useNavigate();
   const [mode, setMode] = useState<'modal' | 'inline'>(defaultMode);
 
-  const state = parseState(params);
-  if (!state) return null;
+  // ── Hooks must always be called in the same order ──────────────────────
+  // The early return for !state must happen AFTER all hooks have been called.
+  // RTK Query's skip option prevents fetches when state is null.
 
+  const state = parseState(params);
   const isInline = mode === 'inline';
 
   const switchToModal = () => {
     setMode('modal');
-    // Add modal query param so the URL always reflects modal mode.
-    // For inline mode the viewer is just rendered in-flow with no extra param.
     const newParams = new URLSearchParams(params);
     newParams.set('_mode', 'modal');
     navigate(`${baseUrl}?${newParams.toString()}`, { replace: true });
@@ -173,45 +173,30 @@ export const FileViewer: React.FC<FileViewerProps> = ({ baseUrl, headRef, defaul
 
   const switchToInline = () => {
     setMode('inline');
-    // Remove the _mode param to keep URL clean.
     const newParams = new URLSearchParams(params);
     newParams.delete('_mode');
     navigate(`${baseUrl}?${newParams.toString()}`, { replace: true });
   };
 
-  // The primary ref to display (or the "to" ref in compare mode).
-  const primaryRef = state.ref;
+  const primaryRef = state?.ref ?? '';
+  const secondaryRef = state?.compareRef;
 
-  // For compare mode: the second ref is compareRef if provided,
-  // otherwise fall back to the "from" meaning (compareRef stores from when opened
-  // from DiffRenderer).
-  const secondaryRef = state.compareRef;
-
-  const { data: primaryContent, isLoading: primaryLoading } = useGetFileContentQuery({
-    ref: primaryRef,
-    path: state.file,
-    start: state.startLine,
-    end: state.endLine,
-  });
-
-  // Always call the hook (Rules of Hooks). Use skip=true when compare mode is not active
-  // or secondaryRef is unavailable so no network request fires.
-  const { data: secondaryContent, isLoading: secondaryLoading } = useGetFileContentQuery(
-    {
-      ref: secondaryRef ?? '',
-      path: state.file,
-      start: state.startLine,
-      end: state.endLine,
-    },
-    { skip: !state.compare || !secondaryRef }
+  // useGetFileContentQuery is always called (Rules of Hooks). skip=true when no valid state.
+  const { data: primaryContent, isLoading: primaryLoading } = useGetFileContentQuery(
+    { ref: primaryRef, path: state?.file ?? '', start: state?.startLine ?? 1, end: state?.endLine ?? 1 },
+    { skip: !state }
   );
 
-  // secondaryLoading is always defined (hook is always called); it is false when skip=true.
-  const isLoading = primaryLoading || secondaryLoading;
+  const { data: secondaryContent, isLoading: secondaryLoading } = useGetFileContentQuery(
+    { ref: secondaryRef ?? '', path: state?.file ?? '', start: state?.startLine ?? 1, end: state?.endLine ?? 1 },
+    { skip: !state || !state.compare || !secondaryRef }
+  );
 
-  // Highlight applies to the primary pane (or to whichever pane is shown).
-  // In compare mode the "after" pane (primaryRef) is highlighted.
-  const highlightLine = state.highlightLine;
+  const isLoading = primaryLoading || secondaryLoading;
+  const highlightLine = state?.highlightLine;
+
+  // ── Early return AFTER all hooks ───────────────────────────────────────
+  if (!state) return null;
 
   const handleClose = () => navigate(baseUrl);
 
