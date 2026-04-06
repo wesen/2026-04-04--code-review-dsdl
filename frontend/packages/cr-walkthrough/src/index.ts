@@ -11,3 +11,5 @@ export { FileBadge } from './components/FileBadge';
 export { CodeBlock } from './components/CodeBlock';
 export { CodeLine } from './components/CodeLine';
 export { Note } from './components/Note';
+export { FileViewer, buildFileViewerUrl } from './components/FileViewer';
+export type { FileViewerState } from './components/FileViewer';

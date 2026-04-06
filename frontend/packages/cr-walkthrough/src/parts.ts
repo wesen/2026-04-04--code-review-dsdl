@@ -80,6 +80,14 @@ export const PARTS = {
   SEVERITY_WARN: 'severity-warn',
   SEVERITY_ISSUE: 'severity-issue',
   SEVERITY_PRAISE: 'severity-praise',
+
+  // FileViewer (cross-linking overlay)
+  FILE_VIEWER: 'file-viewer',
+  FILE_VIEWER_OVERLAY: 'file-viewer-overlay',
+  FILE_VIEWER_HEADER: 'file-viewer-header',
+  FILE_VIEWER_PANE: 'file-viewer-pane',
+  FILE_VIEWER_PANE_LABEL: 'file-viewer-pane-label',
+  FILE_VIEWER_CLOSE: 'file-viewer-close',
 } as const;
 
 export type PartName = (typeof PARTS)[keyof typeof PARTS];

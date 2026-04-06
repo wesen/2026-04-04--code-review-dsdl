@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, useParams } from 'react-router-dom';
-import { CRWalkthrough, ThemeProvider, useTheme } from '@crs-cradle/cr-walkthrough';
+import { CRWalkthrough, ThemeProvider, useTheme, FileViewer } from '@crs-cradle/cr-walkthrough';
 
 // ── App shell ───────────────────────────────────────────────────────
 
@@ -154,7 +154,15 @@ function WalkthroughPage({
   onThemeChange: (t: 'dark' | 'light') => void;
 }) {
   const { id } = useParams();
-  return <CRWalkthrough walkthroughId={id} onThemeChange={onThemeChange} />;
+  if (!id) return null;
+
+  return (
+    <>
+      <CRWalkthrough walkthroughId={id} onThemeChange={onThemeChange} />
+      {/* FileViewer renders when query params are present; null otherwise */}
+      <FileViewer baseUrl={`/wt/${id}`} />
+    </>
+  );
 }
 
 // ── Theme toggle ────────────────────────────────────────────────────
