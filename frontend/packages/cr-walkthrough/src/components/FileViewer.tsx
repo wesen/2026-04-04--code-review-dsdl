@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { PARTS } from '../parts';
 import { useGetFileContentQuery } from '../api/walkthroughsApi';
@@ -75,6 +75,11 @@ export interface FileViewerProps {
   baseUrl: string;
   /** Walkthrough head ref — used when an annotation references walkthrough.head */
   headRef?: string;
+  /**
+   * Display mode: 'modal' (default, overlay) or 'inline' (in-flow).
+   * In inline mode, the viewer renders where it is placed in the DOM.
+   */
+  defaultMode?: 'modal' | 'inline';
 }
 
 // ── Sub-components ───────────────────────────────────────────────────
@@ -147,12 +152,32 @@ function FilePane({
  *
  * Compare mode fetches two refs in parallel and renders them side by side.
  */
-export const FileViewer: React.FC<FileViewerProps> = ({ baseUrl, headRef }) => {
+export const FileViewer: React.FC<FileViewerProps> = ({ baseUrl, headRef, defaultMode = 'modal' }) => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
+  const [mode, setMode] = useState<'modal' | 'inline'>(defaultMode);
 
   const state = parseState(params);
   if (!state) return null;
+
+  const isInline = mode === 'inline';
+
+  const switchToModal = () => {
+    setMode('modal');
+    // Add modal query param so the URL always reflects modal mode.
+    // For inline mode the viewer is just rendered in-flow with no extra param.
+    const newParams = new URLSearchParams(params);
+    newParams.set('_mode', 'modal');
+    navigate(`${baseUrl}?${newParams.toString()}`, { replace: true });
+  };
+
+  const switchToInline = () => {
+    setMode('inline');
+    // Remove the _mode param to keep URL clean.
+    const newParams = new URLSearchParams(params);
+    newParams.delete('_mode');
+    navigate(`${baseUrl}?${newParams.toString()}`, { replace: true });
+  };
 
   // The primary ref to display (or the "to" ref in compare mode).
   const primaryRef = state.ref;
@@ -194,9 +219,138 @@ export const FileViewer: React.FC<FileViewerProps> = ({ baseUrl, headRef }) => {
       ? `L${state.startLine}`
       : `L${state.startLine}–${state.endLine}`;
 
+  const commonPanelStyle: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    background: 'var(--cr-color-surface)',
+    border: '1px solid var(--cr-color-border)',
+    borderRadius: 'var(--cr-radius-xl)',
+    overflow: 'hidden',
+    ...(isInline
+      ? {
+          boxShadow: 'var(--cr-shadow-card)',
+          marginBottom: 'var(--cr-space-4)',
+        }
+      : {
+          boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
+        }),
+  };
+
+  const headerButtonStyle: React.CSSProperties = {
+    padding: '4px 10px',
+    borderRadius: 'var(--cr-radius-sm)',
+    border: '1px solid var(--cr-color-border)',
+    background: 'var(--cr-color-surface)',
+    color: 'var(--cr-color-text-muted)',
+    fontSize: 'var(--cr-font-size-xs)',
+    cursor: 'pointer',
+    flexShrink: 0,
+    transition: 'background 0.15s, color 0.15s',
+  };
+
+  // ── Inline mode ────────────────────────────────────────────────
+  if (isInline) {
+    return (
+      <div data-part={PARTS.FILE_VIEWER} data-mode="inline">
+        <div style={{ ...commonPanelStyle }}>
+          <div
+            data-part={PARTS.FILE_VIEWER_HEADER}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: 'var(--cr-space-2) var(--cr-space-3)',
+              borderBottom: '1px solid var(--cr-color-border)',
+              background: 'var(--cr-color-surface-raised)',
+              gap: 'var(--cr-space-3)',
+              flexShrink: 0,
+            }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <span
+                data-part={PARTS.FILE_BADGE_PATH}
+                style={{
+                  fontFamily: 'var(--cr-font-mono)',
+                  fontSize: 'var(--cr-font-size-sm)',
+                  color: 'var(--cr-color-text)',
+                  fontWeight: 500,
+                }}
+              >
+                {state.file}
+              </span>
+              <span
+                data-part={PARTS.FILE_BADGE_META}
+                style={{
+                  fontFamily: 'var(--cr-font-mono)',
+                  fontSize: 'var(--cr-font-size-xs)',
+                  color: 'var(--cr-color-text-subtle)',
+                }}
+              >
+                {primaryRef} · {lineRangeLabel}
+                {state.compare && secondaryRef && ` · vs ${secondaryRef}`}
+              </span>
+            </div>
+            <div style={{ display: 'flex', gap: 'var(--cr-space-2)' }}>
+              <button
+                style={headerButtonStyle}
+                onClick={switchToModal}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'var(--cr-color-accent)';
+                  (e.currentTarget as HTMLButtonElement).style.color = 'var(--cr-color-inverse)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'var(--cr-color-surface)';
+                  (e.currentTarget as HTMLButtonElement).style.color = 'var(--cr-color-text-muted)';
+                }}
+              >
+                Open as modal
+              </button>
+              <button
+                data-part={PARTS.FILE_VIEWER_CLOSE}
+                style={headerButtonStyle}
+                onClick={handleClose}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'var(--cr-color-accent)';
+                  (e.currentTarget as HTMLButtonElement).style.color = 'var(--cr-color-inverse)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'var(--cr-color-surface)';
+                  (e.currentTarget as HTMLButtonElement).style.color = 'var(--cr-color-text-muted)';
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+          <div style={{ overflow: 'auto', flex: 1 }}>
+            {isLoading ? (
+              <div style={{ padding: 16, textAlign: 'center', color: 'var(--cr-color-text-muted)', fontSize: 13 }}>Loading…</div>
+            ) : primaryContent ? (
+              state.compare && secondaryContent ? (
+                <div style={{ display: 'flex', overflow: 'hidden' }}>
+                  <FilePane content={secondaryContent} highlightLine={highlightLine} paneRef={secondaryRef} />
+                  <div style={{ width: 1, background: 'var(--cr-color-border)', flexShrink: 0 }} />
+                  <FilePane content={primaryContent} highlightLine={highlightLine} paneRef={primaryRef} />
+                </div>
+              ) : (
+                <FilePane content={primaryContent} highlightLine={highlightLine} />
+              )
+            ) : (
+              <div style={{ padding: 24, textAlign: 'center', color: 'var(--cr-color-text-muted)', fontFamily: 'var(--cr-font-mono)', fontSize: 13 }}>
+                Could not load file. <span style={{ color: 'var(--cr-color-text-subtle)' }}>{state.file}@{state.ref}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Modal mode ───────────────────────────────────────────────
   return (
     <div
       data-part={PARTS.FILE_VIEWER}
+      data-mode="modal"
       style={{
         position: 'fixed',
         inset: 0,
@@ -227,13 +381,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({ baseUrl, headRef }) => {
           margin: 'var(--cr-space-8) auto',
           width: 'min(900px, 90vw)',
           maxHeight: '80vh',
-          display: 'flex',
-          flexDirection: 'column',
-          background: 'var(--cr-color-surface)',
-          border: '1px solid var(--cr-color-border)',
-          borderRadius: 'var(--cr-radius-xl)',
-          boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
-          overflow: 'hidden',
+          ...commonPanelStyle,
           pointerEvents: 'all',
         }}
       >
@@ -276,36 +424,38 @@ export const FileViewer: React.FC<FileViewerProps> = ({ baseUrl, headRef }) => {
             </span>
           </div>
 
-          <button
-            data-part={PARTS.FILE_VIEWER_CLOSE}
-            onClick={handleClose}
-            aria-label="Close file viewer"
-            style={{
-              padding: '4px 12px',
-              borderRadius: 'var(--cr-radius-sm)',
-              border: '1px solid var(--cr-color-border)',
-              background: 'var(--cr-color-surface)',
-              color: 'var(--cr-color-text-muted)',
-              fontSize: 'var(--cr-font-size-sm)',
-              cursor: 'pointer',
-              flexShrink: 0,
-              transition: 'background 0.15s, color 0.15s',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background =
-                'var(--cr-color-accent)';
-              (e.currentTarget as HTMLButtonElement).style.color =
-                'var(--cr-color-inverse)';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.background =
-                'var(--cr-color-surface)';
-              (e.currentTarget as HTMLButtonElement).style.color =
-                'var(--cr-color-text-muted)';
-            }}
-          >
-            ✕
-          </button>
+          <div style={{ display: 'flex', gap: 'var(--cr-space-2)' }}>
+            <button
+              style={headerButtonStyle}
+              onClick={switchToInline}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'var(--cr-color-accent)';
+                (e.currentTarget as HTMLButtonElement).style.color = 'var(--cr-color-inverse)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'var(--cr-color-surface)';
+                (e.currentTarget as HTMLButtonElement).style.color = 'var(--cr-color-text-muted)';
+              }}
+            >
+              Open inline
+            </button>
+            <button
+              data-part={PARTS.FILE_VIEWER_CLOSE}
+              onClick={handleClose}
+              aria-label="Close file viewer"
+              style={headerButtonStyle}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'var(--cr-color-accent)';
+                (e.currentTarget as HTMLButtonElement).style.color = 'var(--cr-color-inverse)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'var(--cr-color-surface)';
+                (e.currentTarget as HTMLButtonElement).style.color = 'var(--cr-color-text-muted)';
+              }}
+            >
+              ✕
+            </button>
+          </div>
         </div>
 
         {/* Content */}

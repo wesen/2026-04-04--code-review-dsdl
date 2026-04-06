@@ -74,6 +74,15 @@ type: string  # Required. One of:
                # text, source, diff, code, compare,
                # link, annotation, checkpoint, reveal,
                # shell, section, branch
+
+id: string   # Optional but strongly recommended.
+              # Two uses:
+              #  1. Branch step goto target: the step that branch points to.
+              #  2. Fragment navigation anchor: the URL fragment.
+              #
+              # If omitted, the step's index is used as the anchor
+              # (e.g. "step-3" for the third step).
+              # Fragment navigation: /wt/auth-refactor#race-condition-fix
 ```
 
 All other fields are optional unless marked **required**.
@@ -403,6 +412,81 @@ export type Step =
   | SectionStep
   | BranchStep;
 ```
+
+## Cross-linking and navigation (CR-DSL-002)
+
+After implementing CR-DSL-002, the walkthrough becomes a navigable graph instead of a flat list. Every badge that references a file or line is a link that opens the FileViewer overlay.
+
+### Step anchors
+
+Every rendered step has a `data-step-id` attribute. The attribute value is the step's `id` field from the YAML (or `step-{N}` as a fallback). Navigating to `/wt/{id}#{anchor}` scrolls to that step.
+
+**Good practice:** Give key steps explicit `id` fields so annotations and other steps can target them reliably:
+
+```yaml
+- type: annotation
+  id: race-condition-fix
+  file: src/middleware/auth.ts
+  line: 42
+  severity: warn
+  body: Race condition if token refresh fires.
+
+# elsewhere, a branch option can now say:
+- type: branch
+  prompt: See also:
+  options:
+    - label: The race condition fix
+      goto: race-condition-fix  # references the annotation step's id
+```
+
+### FileViewer URL state
+
+The FileViewer is driven entirely by URL query params on the walkthrough route:
+
+| Param | Example | Meaning |
+|---|---|---|
+| `file` | `src/utils/token.ts` | File path |
+| `ref` | `feat/auth-refactor` | Git ref to read |
+| `lines` | `30,60` | Line range (start,end) |
+| `highlight` | `42` | Line to scroll to and highlight |
+| `compare` | `true` | Two-pane compare mode |
+| `compareRef` | `main` | Second ref for compare mode |
+
+**Examples:**
+
+```
+/wt/auth-refactor
+  → walkthrough only, no FileViewer
+
+/wt/auth-refactor?file=src/middleware/auth.ts&ref=feat/auth-refactor&lines=30,60
+  → walkthrough + FileViewer showing src/middleware/auth.ts L30–60 at feat/auth-refactor
+
+/wt/auth-refactor?file=src/middleware/auth.ts&ref=feat/auth-refactor&lines=42,42&highlight=42
+  → walkthrough + FileViewer focused on line 42
+
+/wt/auth-refactor?file=src/middleware/auth.ts&ref=feat/auth-refactor&lines=1,100&compare=true&compareRef=main
+  → walkthrough + FileViewer in compare mode (feat vs main)
+
+/wt/auth-refactor#race-condition-fix
+  → walkthrough scrolled to step with id=race-condition-fix
+```
+
+Browser back/forward preserves the FileViewer state because it lives in the URL.
+
+### What links to what
+
+| Badge | FileViewer state |
+|---|---|
+| `source` file badge | Single pane, full line range |
+| `source` line number | Single pane, that line highlighted |
+| `annotation` file:line | Single pane, that line highlighted |
+| `diff` from-ref badge | Compare mode, focus on from ref |
+| `diff` to-ref badge | Compare mode, focus on to ref |
+| `compare` pane header | Single pane for that pane's ref |
+
+No new API endpoints are required. The FileViewer fetches from the same `GET /api/files/content` and `GET /api/files/diff` that the step renderers already use. RTK Query caches results, so if a file is already loaded by a step renderer, the FileViewer renders from cache.
+
+---
 
 ## See Also
 

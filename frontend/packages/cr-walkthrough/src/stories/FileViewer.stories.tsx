@@ -121,6 +121,37 @@ function CompareModeRouter() {
   );
 }
 
+// ── Inline mode ────────────────────────────────────────────────────
+
+/** FileViewer in inline mode — rendered in-flow, no overlay backdrop. */
+export const InlineMode: StoryObj = {
+  name: 'Inline mode',
+  render: () => <InlineModeRouter />,
+};
+
+function InlineModeRouter() {
+  const searchParams = new URLSearchParams({
+    file: 'src/utils/token.ts',
+    ref: 'feat/auth-refactor',
+    lines: '12,48',
+  });
+  return (
+    <Provider store={makeStore()}>
+      <MemoryRouter initialEntries={[`/wt/auth-refactor?${searchParams}`]}>
+        <div style={{ padding: 24, background: '#101114', minHeight: '100vh' }}>
+          <p style={{ color: '#888', marginBottom: 16 }}>
+            Walkthrough content would appear here (inline FileViewer below).
+          </p>
+          <FileViewer baseUrl="/wt/auth-refactor" defaultMode="inline" />
+          <p style={{ color: '#888', marginTop: 16 }}>
+            The FileViewer is rendered in-flow within the page content.
+          </p>
+        </div>
+      </MemoryRouter>
+    </Provider>
+  );
+}
+
 // ── buildFileViewerUrl unit stories ──────────────────────────────────
 
 export const UrlConstruction: StoryObj = {
