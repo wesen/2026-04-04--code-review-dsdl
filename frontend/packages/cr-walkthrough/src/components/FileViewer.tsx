@@ -98,7 +98,7 @@ function FilePane({
   // Scroll highlighted line into view whenever highlight changes.
   useEffect(() => {
     if (highlightLine != null && highlightRef.current) {
-      highlightRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      highlightRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [highlightLine]);
 
@@ -289,7 +289,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({ baseUrl, headRef, defaul
                   (e.currentTarget as HTMLButtonElement).style.color = 'var(--cr-color-text-muted)';
                 }}
               >
-                Open as modal
+                Pop out
               </button>
               <button
                 data-part={PARTS.FILE_VIEWER_CLOSE}
@@ -423,7 +423,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({ baseUrl, headRef, defaul
                 (e.currentTarget as HTMLButtonElement).style.color = 'var(--cr-color-text-muted)';
               }}
             >
-              Open inline
+              Open in new tab
             </button>
             <button
               data-part={PARTS.FILE_VIEWER_CLOSE}

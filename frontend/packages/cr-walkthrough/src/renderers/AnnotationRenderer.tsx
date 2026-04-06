@@ -3,6 +3,9 @@ import { PARTS } from '../parts';
 import type { AnnotationSeverity } from '../types';
 import type { FileViewerState } from '../components/FileViewer';
 
+/** Lines of context to show above and below the highlighted line in the FileViewer. */
+const CONTEXT_LINES = 30;
+
 const SEVERITY_COLOR: Record<AnnotationSeverity, string> = {
   info: 'var(--cr-color-severity-info)',
   warn: 'var(--cr-color-severity-warn)',
@@ -43,12 +46,15 @@ export const AnnotationRenderer: React.FC<Props> = ({
   // Resolve the git ref: explicit step ref overrides walkthrough head.
   const ref = step.ref || walkthroughRef || 'HEAD';
 
+  // Open FileViewer showing surrounding context, scrolling the annotated line to the centre.
   const handleFileLineClick = () => {
+    const expandedStart = Math.max(1, step.line - CONTEXT_LINES);
+    const expandedEnd = step.line + CONTEXT_LINES;
     onOpenFile?.({
       file: step.file,
       ref,
-      startLine: step.line,
-      endLine: step.line,
+      startLine: expandedStart,
+      endLine: expandedEnd,
       highlightLine: step.line,
     });
   };

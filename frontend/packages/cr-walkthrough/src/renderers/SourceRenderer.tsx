@@ -8,6 +8,9 @@ import { useGetFileContentQuery } from '../api/walkthroughsApi';
 import type { SourceStep } from '../types';
 import type { FileViewerState } from '../components/FileViewer';
 
+/** Lines of context to show above and below the highlighted line in the FileViewer. */
+const CONTEXT_LINES = 30;
+
 interface Props {
   step: SourceStep;
   /** Override the default git ref (defaults to walkthrough head) */
@@ -47,13 +50,16 @@ export const SourceRenderer: React.FC<Props> = ({
     });
   };
 
-  // Open FileViewer focused on a single line.
+  // Open FileViewer showing the full file with surrounding context,
+  // scrolling the clicked line to the centre of the viewport.
   const handleLineClick = (lineNum: number) => {
+    const expandedStart = Math.max(1, lineNum - CONTEXT_LINES);
+    const expandedEnd = lineNum + CONTEXT_LINES;
     onOpenFile?.({
       file: step.file,
       ref,
-      startLine: lineNum,
-      endLine: lineNum,
+      startLine: expandedStart,
+      endLine: expandedEnd,
       highlightLine: lineNum,
     });
   };
