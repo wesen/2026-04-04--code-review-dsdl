@@ -1,7 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PARTS } from '../parts';
 import { StepCard } from '../renderers/StepCard';
 import { useGetWalkthroughQuery } from '../api/walkthroughsApi';
+import { buildFileViewerUrl } from './FileViewer';
 import type { Walkthrough } from '../types';
 
 // ── Theme context ────────────────────────────────────────────────────
@@ -39,6 +41,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 
 // ── Props ───────────────────────────────────────────────────────────
 
+import type { FileViewerState } from './FileViewer';
+
 interface CRWalkthroughProps {
   /** Walkthrough ID — fetches from the API via RTK Query */
   walkthroughId?: string;
@@ -54,6 +58,22 @@ interface CRWalkthroughProps {
   onBranch?: (gotoId: string) => void;
   /** Called when the widget theme changes so the outer chrome can sync */
   onThemeChange?: (theme: Theme) => void;
+  /**
+   * Callback fired when the user clicks a file badge, line number, or other
+   * navigation target inside a step. Opens the FileViewer at the given state.
+   * If not provided, navigation links within steps are disabled.
+   *
+   * The recommended implementation uses `navigate(buildFileViewerUrl(base, state))`.
+   *
+   * @example
+   * ```tsx
+   * const navigate = useNavigate();
+   * <CRWalkthrough walkthroughId="auth-refactor"
+   *   onOpenFile={(state) => navigate(buildFileViewerUrl(`/wt/auth-refactor`, state))}
+   * />
+   * ```
+   */
+  onOpenFile?: (state: FileViewerState) => void;
 }
 
 // ── Component ───────────────────────────────────────────────────────
@@ -66,6 +86,7 @@ export const CRWalkthrough: React.FC<CRWalkthroughProps> = ({
   tokens,
   onBranch,
   onThemeChange,
+  onOpenFile,
 }) => {
   const { theme } = useTheme();
 
@@ -174,6 +195,8 @@ export const CRWalkthrough: React.FC<CRWalkthroughProps> = ({
               step={step}
               index={String(i + 1)}
               onGoto={onBranch}
+              walkthroughRef={wt.head}
+              onOpenFile={onOpenFile}
             />
           ))}
         </div>

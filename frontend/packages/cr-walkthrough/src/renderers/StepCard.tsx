@@ -3,12 +3,18 @@ import { STEP_TYPE_META } from './StepRendererRegistry';
 import { PARTS } from '../parts';
 import { StepRendererRegistry } from './StepRendererRegistry';
 import type { Step } from '../types';
+import type { FileViewerState } from '../components/FileViewer';
 
 interface Props {
   step: Step;
   index: string;
   depth?: number;
   onGoto?: (goto: string) => void;
+  /** Git ref of the walkthrough head (e.g. "feat/auth-refactor").
+   *  Passed to child renderers so they can construct file URLs. */
+  walkthroughRef?: string;
+  /** Opens the FileViewer overlay. Undefined = navigation links disabled. */
+  onOpenFile?: (state: FileViewerState) => void;
 }
 
 // Stable step anchor ID: explicit id field if present, otherwise "step-{index}".
@@ -17,7 +23,7 @@ function stepAnchorId(id: string | undefined, index: string): string {
   return id ?? `step-${index}`;
 }
 
-export const StepCard: React.FC<Props> = ({ step, index, depth = 0, onGoto }) => {
+export const StepCard: React.FC<Props> = ({ step, index, depth = 0, onGoto, walkthroughRef, onOpenFile }) => {
   const meta = STEP_TYPE_META[step.type] ?? { icon: '?', colorVar: '--cr-color-text-step' };
   const anchorId = stepAnchorId(step.id, index);
 
@@ -73,7 +79,13 @@ export const StepCard: React.FC<Props> = ({ step, index, depth = 0, onGoto }) =>
       </div>
 
       {/* Step content */}
-      <StepRendererRegistry step={step} depth={depth} onGoto={onGoto} />
+      <StepRendererRegistry
+        step={step}
+        depth={depth}
+        onGoto={onGoto}
+        walkthroughRef={walkthroughRef}
+        onOpenFile={onOpenFile}
+      />
     </div>
   );
 };

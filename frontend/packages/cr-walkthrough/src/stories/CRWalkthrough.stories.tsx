@@ -1,8 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
+import { MemoryRouter, useNavigate } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
 import { CRWalkthrough, ThemeProvider } from '../components/CRWalkthrough';
+import { walkthroughsApi } from '../api/walkthroughsApi';
 import { authRefactorWalkthrough } from '../fixtures/authRefactor';
+import { FileViewer, buildFileViewerUrl } from '../components/FileViewer';
 import type { Walkthrough } from '../types';
+import type { FileViewerState } from '../components/FileViewer';
 
 // ── Default story ──────────────────────────────────────────────────
 
@@ -134,6 +140,95 @@ export const SingleTextStep: StoryObj = {
         ],
       }}
     />
+  ),
+};
+
+// ── M3–M5: Cross-linking integration ─────────────────────────────────
+
+function makeStore() {
+  return configureStore({
+    reducer: { [walkthroughsApi.reducerPath]: walkthroughsApi.reducer },
+    middleware: (gdm) => gdm().concat(walkthroughsApi.middleware),
+  });
+}
+
+function CrossLinkWalkthrough({ walkthrough }: { walkthrough: Walkthrough }) {
+  const navigate = useNavigate();
+  const handleOpenFile = (state: FileViewerState) => {
+    navigate(buildFileViewerUrl('/wt/auth-refactor', state));
+  };
+  return <CRWalkthrough walkthrough={walkthrough} onOpenFile={handleOpenFile} />;
+}
+
+/**
+ * CRWalkthrough with cross-linking enabled.
+ *
+ * Clicking the file badge on any `source` step opens the FileViewer overlay
+ * showing that file at the specified line range.
+ *
+ * In Storybook (no real API) the content shows the "could not load file" state.
+ * The `FileViewer` stories show the fully-loaded cases.
+ */
+export const WithCrossLinking: StoryObj = {
+  name: 'CRWalkthrough — with FileViewer cross-linking',
+  decorators: [
+    (Story) => (
+      <Provider store={makeStore()}>
+        <MemoryRouter initialEntries={['/wt/auth-refactor']}>
+          <ThemeProvider initialTheme="dark">
+            <style>{`
+              @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+              *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+            `}</style>
+            <div style={{ minHeight: '100vh', background: '#101114' }}>
+              <Story />
+            </div>
+          </ThemeProvider>
+        </MemoryRouter>
+      </Provider>
+    ),
+  ],
+  render: () => (
+    <div style={{ position: 'relative' }}>
+      <CrossLinkWalkthrough walkthrough={authRefactorWalkthrough} />
+      {/* Pre-load FileViewer with query params so it appears open */}
+      <FileViewer baseUrl="/wt/auth-refactor" />
+    </div>
+  ),
+};
+
+/**
+ * Same as WithCrossLinking but with a highlighted line pre-set.
+ * URL: /wt/auth-refactor?file=src/utils/token.ts&ref=feat/auth-refactor&lines=42,42&highlight=42
+ */
+export const WithCrossLinkingHighlighted: StoryObj = {
+  name: 'CRWalkthrough — FileViewer with highlighted line',
+  decorators: [
+    (Story) => (
+      <Provider store={makeStore()}>
+        <MemoryRouter
+          initialEntries={[
+            '/wt/auth-refactor?file=src/utils/token.ts&ref=feat/auth-refactor&lines=42,42&highlight=42',
+          ]}
+        >
+          <ThemeProvider initialTheme="dark">
+            <style>{`
+              @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+              *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+            `}</style>
+            <div style={{ minHeight: '100vh', background: '#101114' }}>
+              <Story />
+            </div>
+          </ThemeProvider>
+        </MemoryRouter>
+      </Provider>
+    ),
+  ],
+  render: () => (
+    <div style={{ position: 'relative' }}>
+      <CrossLinkWalkthrough walkthrough={authRefactorWalkthrough} />
+      <FileViewer baseUrl="/wt/auth-refactor" />
+    </div>
   ),
 };
 

@@ -40,3 +40,37 @@ export const MetaOnly: Story = {
     meta: 'typescript',
   },
 };
+
+// ── Interactive (cross-linking) variants ───────────────────────────
+
+export const Interactive: Story = {
+  name: 'Interactive — file badge with onClick',
+  args: {
+    file: 'src/utils/token.ts',
+    meta: 'L12–48',
+    ref_: 'feat/auth-refactor',
+    interactive: true,
+    onClick: () => alert('Open FileViewer at this file range'),
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'When `interactive` and `onClick` are provided, the badge is styled as a clickable link. ' +
+          'The file path is underlined and the cursor changes to pointer. ' +
+          'Clicking calls `onOpenFile` to open the FileViewer.',
+      },
+    },
+  },
+};
+
+export const InteractiveWithRef: Story = {
+  name: 'Interactive with ref — shows branch/commit ref',
+  args: {
+    file: 'src/middleware/auth.ts',
+    meta: 'L30–60',
+    ref_: 'feat/auth-refactor',
+    interactive: true,
+    onClick: () => {},
+  },
+};

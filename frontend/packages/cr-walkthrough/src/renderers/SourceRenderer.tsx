@@ -6,20 +6,30 @@ import { CodeLine } from '../components/CodeLine';
 import { Note } from '../components/Note';
 import { useGetFileContentQuery } from '../api/walkthroughsApi';
 import type { SourceStep } from '../types';
+import type { FileViewerState } from '../components/FileViewer';
 
 interface Props {
   step: SourceStep;
   /** Override the default git ref (defaults to walkthrough head) */
   refOverride?: string;
   accentColor?: string;
+  /** Walkthrough head ref — used to construct FileViewer URL */
+  walkthroughRef?: string;
+  /** Opens the FileViewer overlay. Undefined = links hidden. */
+  onOpenFile?: (state: FileViewerState) => void;
 }
 
 export const SourceRenderer: React.FC<Props> = ({
   step,
   refOverride,
   accentColor,
+  walkthroughRef,
+  onOpenFile,
 }) => {
-  const ref = refOverride || step.ref || 'HEAD';
+  // Default to walkthrough head ref if step has no explicit ref override.
+  const ref = refOverride || step.ref || walkthroughRef || 'HEAD';
+  const hasLinks = onOpenFile !== undefined;
+
   const { data, isLoading, isError, error } = useGetFileContentQuery({
     ref,
     path: step.file,
@@ -27,11 +37,35 @@ export const SourceRenderer: React.FC<Props> = ({
     end: step.lines[1],
   });
 
+  // Open FileViewer at the full file range (no highlight).
+  const handleFileBadgeClick = () => {
+    onOpenFile?.({
+      file: step.file,
+      ref,
+      startLine: step.lines[0],
+      endLine: step.lines[1],
+    });
+  };
+
+  // Open FileViewer focused on a single line.
+  const handleLineClick = (lineNum: number) => {
+    onOpenFile?.({
+      file: step.file,
+      ref,
+      startLine: lineNum,
+      endLine: lineNum,
+      highlightLine: lineNum,
+    });
+  };
+
   return (
     <div data-part={PARTS.SOURCE_STEP}>
       <FileBadge
         file={step.file}
         meta={`L${step.lines[0]}–${step.lines[1]}`}
+        ref_={ref}
+        onClick={hasLinks ? handleFileBadgeClick : undefined}
+        interactive={hasLinks}
       />
       <CodeBlock>
         {isLoading && (
@@ -64,6 +98,8 @@ export const SourceRenderer: React.FC<Props> = ({
                   num={ln}
                   highlight={isHighlight}
                   highlightColor={accentColor}
+                  onClick={hasLinks ? () => handleLineClick(ln) : undefined}
+                  interactive={hasLinks}
                 >
                   <span style={{ opacity: 0.25 }}>{line}</span>
                 </CodeLine>

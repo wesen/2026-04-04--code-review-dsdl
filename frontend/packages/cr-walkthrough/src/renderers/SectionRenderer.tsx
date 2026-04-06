@@ -2,6 +2,7 @@ import React from 'react';
 import { PARTS } from '../parts';
 import { StepCard } from './StepCard';
 import type { SectionStep } from '../types';
+import type { FileViewerState } from '../components/FileViewer';
 
 interface Props {
   step: SectionStep;
@@ -11,6 +12,10 @@ interface Props {
   onGoto?: (goto: string) => void;
   /** Current step index offset (for numbering) */
   indexOffset?: number;
+  /** Walkthrough head ref — used to construct file URLs */
+  walkthroughRef?: string;
+  /** Opens the FileViewer overlay */
+  onOpenFile?: (state: FileViewerState) => void;
 }
 
 export const SectionRenderer: React.FC<Props> = ({
@@ -18,6 +23,8 @@ export const SectionRenderer: React.FC<Props> = ({
   depth = 0,
   onGoto,
   indexOffset = 0,
+  walkthroughRef,
+  onOpenFile,
 }) => {
   return (
     <div
@@ -50,6 +57,8 @@ export const SectionRenderer: React.FC<Props> = ({
             index={`${indexOffset + i + 1}`}
             depth={depth + 1}
             onGoto={onGoto}
+            walkthroughRef={walkthroughRef}
+            onOpenFile={onOpenFile}
           />
         ))}
       </div>
